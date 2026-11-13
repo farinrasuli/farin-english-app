@@ -106,20 +106,20 @@
    "id": "hmlog",
    "view": "harbour",
    "box": [
-    62,
-    18,
     14,
-    14
+    33,
+    15,
+    12
    ]
   },
   {
    "id": "weather",
    "view": "harbour",
    "box": [
-    6,
-    22,
-    14,
-    16
+    2,
+    46,
+    12,
+    14
    ]
   },
   {
@@ -136,23 +136,60 @@
    "id": "padlock",
    "view": "shed",
    "box": [
+    1,
+    22,
     10,
-    24,
-    14,
-    16
+    14
    ]
   },
   {
    "id": "oar",
    "view": "loft",
    "box": [
-    30,
-    40,
-    36,
-    10
+    74,
+    38,
+    12,
+    54
    ]
   }
  ],
+ "evidence": {
+  "hmlog": {
+   "icon": "book",
+   "c": "#dcefff",
+   "art": "harbourlog"
+  },
+  "padlock": {
+   "icon": "key",
+   "c": "#ffe7a8"
+  },
+  "tillroll": {
+   "icon": "receipt",
+   "c": "#fffbe8",
+   "art": "till"
+  },
+  "weather": {
+   "icon": "doc",
+   "c": "#fff6c2"
+  },
+  "oar": {
+   "icon": "oar",
+   "c": "#f3e3c8",
+   "art": "oar2"
+  },
+  "photo2115": {
+   "icon": "photo",
+   "c": "#d9e4ff",
+   "stamp": {
+    "en": "21:15",
+    "es": "21:15"
+   }
+  },
+  "text": {
+   "icon": "phone",
+   "c": "#e5f6e8"
+  }
+ },
  "pins": {},
  "open": {
   "plate": "b1e2-shed"

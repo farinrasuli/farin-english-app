@@ -250,7 +250,7 @@ var TAB = [
 function svg(paths, cls){ return '<svg viewBox="0 0 24 24" class="' + (cls || '') + '" aria-hidden="true">' + paths + '</svg>'; }
 var SPEAKER_SVG = '<svg viewBox="0 0 24 24"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" stroke="none"/><path d="M15.5 9a4 4 0 010 6M17.8 6.5a7.5 7.5 0 010 11"/></svg>';
 function evCardHtml(id, o){
-  var d = evDef(id) || {id:id, name:id}, st = evStage(id), m = man('ev-' + id);
+  var d = evDef(id) || {id:id, name:id}, st = evStage(id), m = man('ev-' + (st.art || id));   // st.art: the art id when two episodes use one evidence id for different things (2026-11-12)
   var art = m && m.ready ? '<img src="' + esc(artUrl(m)) + '" alt="" draggable="false">' : icon(st.icon);
   return '<div class="cc-ev" data-ev="' + esc(id) + '" role="button" tabindex="0" aria-label="' + esc(T(d.name)) + '"><div class="cc-evart" style="--evc:' + esc(st.c || '#f3e3c8') + '">' + art +
     (st.stamp ? '<span class="cc-evstamp" lang="' + G.lang + '">' + esc(T(st.stamp)) + '</span>' : '') + '</div><b lang="' + G.lang + '">' + esc(T(d.name)) + '</b></div>';
@@ -794,7 +794,7 @@ async function stepHub(){
   function detailHtml(vid){
     return findsIn(vid).map(function(f){
       var got = f.secret ? r.secret : r.found.indexOf(f.id) >= 0;
-      var st = evStage(f.id), m = man('find-' + f.id);
+      var st = evStage(f.id), m = man('find-' + (st.art || f.id));
       var inner = m && m.ready ? '<img src="' + esc(artUrl(m)) + '" alt="" style="width:100%;height:100%;object-fit:contain">' : icon(st.icon);
       return '<div class="cc-find' + (got ? ' cc-got' : '') + '" data-find="' + esc(f.id) + '" style="left:' + f.box[0] + '%;top:' + f.box[1] + '%;width:' + f.box[2] + '%;height:' + f.box[3] + '%">' + inner + '</div>';
     }).join('');
@@ -1490,7 +1490,8 @@ async function stepDeduction(){
   G.status = {kind:'ded', step:'deduction', clauses:clauses.length, set:function(){ return r.dedSet.slice(); },
     check:function(ci){ return '.cc-check[data-ci="' + (ci || 0) + '"]'; },
     answers:function(ci){ return gaps.map(function(gp, gi){ return gi; }).filter(function(gi){ return ci == null || G.gapClause[gi] === ci; }).map(function(gi){ return sel(gi, gaps[gi].answer); }); },
-    wrong:function(ci){ return gaps.map(function(gp, gi){ return gi; }).filter(function(gi){ return ci == null || G.gapClause[gi] === ci; }).map(function(gi){ var w = gaps[gi].pool.filter(function(c){ return c.id !== gaps[gi].answer; })[0]; return sel(gi, w.id); }); }};
+    // a wrong chip still on the board: after rung 3 only the answer and the strong distractor stay (GPrT3pSj, 2026-11-13)
+    wrong:function(ci){ return gaps.map(function(gp, gi){ return gi; }).filter(function(gi){ return ci == null || G.gapClause[gi] === ci; }).map(function(gi){ var all = gaps[gi].pool.filter(function(c){ return c.id !== gaps[gi].answer; }); var w = all.filter(function(c){ var el = box.querySelector(sel(gi, c.id)); return !el || !el.classList.contains("cc-out"); })[0] || all[0]; return sel(gi, w.id); }); }};
   async function setClause(ci){
     var sec = box.querySelector('.cc-clause[data-ci="' + ci + '"]'), ids = clauseGaps(ci);
     for(var i = 0; i < ids.length; i++){ var gEl = sec.querySelector('.cc-gap[data-g="' + ids[i] + '"]'); if(gEl) gEl.classList.add('cc-solid'); sfx('pop'); await wait(80); }
