@@ -7922,7 +7922,8 @@ function renderBadgeUnlockCard(justEarned){
    a passed practice round, a finished game), never on every render of a
    still-in-progress screen, or an earned badge could be silently dropped
    before anything shows it. */
-function pullJustEarnedBadges(){
+function pullJustEarnedBadges(force){
+  if(!force && typeof worldKind === 'function' && worldKind() && THEATRE_QUICK_VIEWS.includes(state.view)) return [];   // in a world the celebration shows them
   const justEarned = newlyEarnedBadges.slice();
   newlyEarnedBadges = [];
   return justEarned;
@@ -8235,7 +8236,8 @@ function ttsBadge(code){
   clearTimeout(ttsBadgeTimer);
   let el = document.getElementById('tts-badge');
   // with the switch the pill stays a moment after the line ends, so there is time to tap it
-  if(!code){ if(el) ttsBadgeTimer = setTimeout(()=>el.classList.remove('on'), ttsAccentReady() ? 2500 : 500); return; }
+  if(!code){ document.body.removeAttribute('data-speaking'); if(el) ttsBadgeTimer = setTimeout(()=>el.classList.remove('on'), ttsAccentReady() ? 2500 : 500); return; }
+  document.body.setAttribute('data-speaking', code);
   const v = TTS_AUDIO_VOICES[code]; if(!v) return;
   if(!el){
     el = document.createElement('button'); el.id = 'tts-badge'; el.type = 'button'; document.body.appendChild(el);
@@ -13560,6 +13562,7 @@ function showCelebration(kind, detail, low, extra){
   const alt = sv && extra.fresh ? souvenirAltContent(sv) : null;   // "Take the other one" (tobT7nwI)
   const stickers = (extra.stickers || []).map(t=>({t, hot:false}));
   if(extra.newBest) stickers.push({t:L('New best!','Yeni rekor!','رکورد تازه!','¡Nuevo récord!'), hot:true});
+  (extra.badges || []).forEach(id=>{ const b = BADGES.find(x=>x.id===id); if(b) stickers.push({t:L('New badge','Yeni rozet','نشان تازه','Insignia nueva') + ': ' + (b.title[LANG] || b.title.en), hot:true}); });
   const el = document.createElement('div');
   el.className = 'celebrate-overlay';
   el.innerHTML = `<div class="celebrate-stack">
@@ -13708,7 +13711,8 @@ function maybeCelebrate(){
   target._celebrated = true;
   // Gamification v2: award the souvenir now (saved with the round), reveal it in the sequence
   const extra = celebrationExtras(v, vp, kind);
-  if(v === 'quiz'){ const ytGo = yourTurnExit(state.quiz) || useItExit(state.quiz); if(ytGo) extra.onExit = ytGo; }   // teaching redesign phase 2: Try, then Your turn / Use it
+  if(v === 'quiz'){ const ytGo = yourTurnExit(state.quiz) || useItExit(state.quiz); if(ytGo) extra.onExit = ytGo; }
+  if(typeof worldKind === 'function' && worldKind() && THEATRE_QUICK_VIEWS.includes(v)) extra.badges = pullJustEarnedBadges(true);   // teaching redesign phase 2: Try, then Your turn / Use it
   save();
   // brief beat so the learner sees their score before the bubble arrives
   // in a world the end beat (2.4 s) and Order Up!'s closing line play first, then the overlay (worlds SPEC 4.9)
@@ -15845,6 +15849,7 @@ function renderSettings(){
         <button class="btn btn-ghost" data-action="retake-diagnostic">${L('Redo my diagnostic','Testimi yeniden yap','دوباره انجام‌دادن آزمون')}</button>
         <button class="btn btn-ghost" data-action="toggle-sfx" aria-pressed="${sfxMuted?'false':'true'}">${sfxMuted ? ICONS.soundOff : ICONS.soundOn} ${sfxMuted ? L('Sound effects: off','Ses efektleri: kapalı','جلوه‌های صوتی: خاموش','Efectos de sonido: apagados') : L('Sound effects: on','Ses efektleri: açık','جلوه‌های صوتی: روشن','Efectos de sonido: encendidos')}</button>
         ${renderAccentSetting()}
+        <button class="btn btn-ghost" data-action="toggle-read-aloud" aria-pressed="${readAloud() ? 'true' : 'false'}">${readAloud() ? ICONS.soundOn : ICONS.soundOff} ${readAloud() ? L('Read story lines aloud in games: on','Oyunlarda hikâye satırlarını sesli oku: açık','خوندن جمله‌های داستان در بازی‌ها: روشن','Leer en voz alta las frases de los juegos: sí') : L('Read story lines aloud in games: off','Oyunlarda hikâye satırlarını sesli oku: kapalı','خوندن جمله‌های داستان در بازی‌ها: خاموش','Leer en voz alta las frases de los juegos: no')}</button>
         <button class="btn btn-ghost" data-action="nav" data-view="privacy-policy">${L('Privacy Policy','Gizlilik Politikası','حریم خصوصی')}</button>
         ${state.profile.recoveryCode ? `<button class="btn btn-ghost" data-action="logout" ${farinPwBusy?'disabled':''}>${farinPwBusy && farinLogoutPending ? L('Logging out…','Çıkış yapılıyor…','در حال خروج…') : farinLogoutPending ? L('Tap again to log out','Çıkış yapmak için tekrar dokun','برای خروج دوباره لمس کن') : L('Log out','Çıkış yap','خروج')}</button>
         ${farinLogoutPending && !state.profile.loginId ? `<p class="field-hint" style="margin-top:0; text-align:center;">${L("You haven't set a password. Write down your recovery code first, then tap again to log out.",'Henüz şifre belirlemedin. Önce kurtarma kodunu not et, sonra çıkış yapmak için tekrar dokun.','هنوز رمز نگذاشته‌ای. اول کد بازیابی‌ات را یادداشت کن، بعد برای خروج دوباره لمس کن.')}</p>` : ''}
@@ -18653,7 +18658,7 @@ function renderGameBuild(){
     <p class="game-hint">${gameFallbackNote(vp)}${L('Tap the words in the right order.','Kelimelere doğru sırayla dokun.','کلمه‌ها را به ترتیب درست بزن.','Toca las palabras en el orden correcto.')}</p>
     <div class="game-card tight" dir="ltr">
       ${it.solved
-        ? `<div class="build-solved" id="build-solved" data-action="build-next">${esc(it.sentence)}</div>`
+        ? `<div class="build-solved" id="build-solved" data-action="build-next">${esc(it.sentence)}${worldKind() === 'build' ? `<button type="button" class="gw-hear" data-action="speak-sentence" data-text="${esc(it.sentence)}" aria-label="${esc(L('Hear this line','Bu satırı dinle','این جمله رو گوش کن','Escucha esta frase'))}">${ICONS.soundOn}</button>` : ''}</div>`
         : `<div class="build-line">${it.slots.map((s,i)=>buildSlotHtml(it, s, i)).join('')}</div>`}
     </div>
     ${it.solved ? '' : `<div class="build-tray" dir="ltr">${it.tiles.map((t,i)=>`<button class="build-tile${t.used ? ' used' : ''}${i === it.hintTile ? ' pulse' : ''}" data-action="build-tile" data-i="${i}" ${t.used ? 'disabled' : ''}>${esc(t.t)}</button>`).join('')}</div>`}
@@ -18696,7 +18701,7 @@ function fxBuildSolved(combo, sentence){
   sparkBurst(c.x, c.y, 6, 'var(--success)');
   sfx('correct'); buzz(12); companionCheer();
   comboCheck(combo);
-  if(!sfxMuted) speakTarget(sentence);
+  if(!sfxMuted && (!worldKind() || readAloud())) speakTarget(sentence);   // in a world: tap the sentence's speaker (SPEC 5.2)
 }
 function fxBuildMiss(back, nextWord){
   back.forEach(i=>anim(document.querySelector('[data-action="build-tile"][data-i="'+i+'"]'), [
@@ -19219,7 +19224,8 @@ function fxCrossSolve(res, round){
   res.idxs.forEach((i,k)=>anim(crossCellEl(i), [{transform:'scale(1)'}, {transform:'scale(1.12)'}, {transform:'scale(1)'}], {duration:220, delay:k*40, easing:'ease-out'}));
   if(!reducedMotion()) res.accents.forEach(i=>{ const el = crossCellEl(i); if(!el) return; const s = document.createElement('span'); s.className = 'sparkle'; el.appendChild(s); setTimeout(()=>s.remove(), 2000); });
   sfx('correct'); buzz(12); companionCheer();
-  speakTarget(w.phrase || w.w, 0.92);   // the whole phrase for a phrase card
+  if(worldKind() === 'cross') worldLine(w.phrase || w.w, 0, {kind:'caption', ms:5000});   // in a world: the solved word with a speaker (SPEC 5.2)
+  else speakTarget(w.phrase || w.w, 0.92);   // the whole phrase for a phrase card
   if(res.combo === 2) setTimeout(()=>{ sfx('combo'); companionSay(L('Two in a row!','İki arka arkaya!','دو تا پشت هم!','¡Dos seguidas!'), 1400); }, 260);
   else if(res.combo > 2) setTimeout(()=>comboCheck(res.combo), 260);
 }
@@ -19604,9 +19610,9 @@ function orderTrayHtml(round){
   const lines = round.tray.map((l, i)=>{
     const it = orderItem(l.id);
     const sizes = (round.level !== 'A1' && it.sized) ? `<span class="order-sizes">${ORDER_SIZES.map(s=>`<button type="button" class="order-size${(l.size || 'M') === s ? ' on' : ''}" data-action="order-size" data-quiet="1" data-i="${i}" data-s="${s}" aria-label="${esc(orderSizeWord(s, lang, it, 1))}">${s}</button>`).join('')}</span>` : '';
-    const extras = (l.extras || []).map(e=>{ const x = orderExtra(e); return x ? `<button type="button" class="order-chip" data-action="order-extra-off" data-quiet="1" data-i="${i}" data-e="${e}" aria-label="${esc(L('Remove','Kaldır','حذف','Quitar') + ' ' + x[lang])}">+ ${x.art} ${esc(x[lang])}</button>` : ''; }).join('');
+    const extras = (l.extras || []).map(e=>{ const x = orderExtra(e); return x ? `<button type="button" class="order-chip" data-action="order-extra-off" data-quiet="1" data-i="${i}" data-e="${e}" aria-label="${esc(L('Remove','Kaldır','حذف','Quitar') + ' ' + x[lang])}">+ ${orderArtHtml(x)} ${esc(x[lang])}</button>` : ''; }).join('');
     return `<div class="order-line${i === round.sel ? ' sel' : ''}" data-action="order-line" data-quiet="1" data-i="${i}" role="button" tabindex="0" dir="ltr">
-      <span class="order-line-art" aria-hidden="true">${it.art}</span>
+      <span class="order-line-art" aria-hidden="true">${orderArtHtml(it)}</span>
       <span class="order-line-name"><span>${esc(orderName(it, l.n, lang))}</span>${l.n > 1 ? `<span class="order-count">×${l.n}</span>` : ''}${sizes}${extras}</span>
       <button type="button" class="order-x" data-action="order-x" data-quiet="1" data-i="${i}" aria-label="${esc(L('Remove one','Birini kaldır','یکی را بردار','Quitar uno'))}">✕</button>
     </div>`;
@@ -19618,6 +19624,14 @@ function orderTrayHtml(round){
 // line seeds who comes in. Out of the world: the clay figure, as before.
 const ORDER_TOWN = {f:['bell','okafor','ada','leyla','rosa','hana','gran'], m:['tom','ben','ollie','pike']};
 function orderWorldOn(){ return !!(window.Theatre && Theatre.world && Theatre.world() === 'order'); }
+// In the world each menu item and extra is its own clear-line render (games/worlds/order/art/item-<id>.webp, extra-<id>.webp; one render
+// each, 2026-11-15). Hot chocolate, cookie, pizza slice and milk have no render yet: they keep their emoji until it lands.
+const ORDER_ART = new Set(['coffee','tea','juice','water','sandwich','croissant','cake','apple','soup','salad','icecream','sugar','ice','lemon','cheese']);
+function orderArtHtml(o){
+  if(!o) return '';
+  if(!orderWorldOn() || !ORDER_ART.has(o.id)) return o.art;
+  return '<img class="order-art-img" src="games/worlds/order/art/' + (ORDER_EXTRAS.includes(o) ? 'extra' : 'item') + '-' + o.id + '.webp" alt="" decoding="async" draggable="false">';
+}
 function orderFaceSrc(round, cust){
   if(!orderWorldOn()) return 'char-' + cust.ch + '.png';
   const list = ORDER_TOWN[TTS_ACCENTS.indexOf(ttsAccent()) === 1 ? 'm' : 'f'], i = Math.max(0, round.customers.indexOf(cust));
@@ -19647,7 +19661,7 @@ function orderCardHtml(round, cust){
 function orderBoardHtml(round, cust){
   if(!cust.board) return '';
   const lang = orderLang(), so = L('sold out','bitti','تمام شده','agotado');
-  return `<div class="order-board" id="order-board" dir="ltr" role="list" aria-label="${esc(L('Menu board','Menü tahtası','تابلوی منو','Pizarra del menú'))}">${cust.board.map(id=>{ const it = orderItem(id), out = id === cust.soldOut; return `<span role="listitem" class="game-chip${out ? ' out' : ''}" title="${out ? esc(so) : ''}" aria-label="${esc(orderName(it, 1, lang) + (out ? ' – ' + so : ''))}">${it.art} ${esc(orderName(it, 1, lang))}</span>`; }).join('')}</div>`;
+  return `<div class="order-board" id="order-board" dir="ltr" role="list" aria-label="${esc(L('Menu board','Menü tahtası','تابلوی منو','Pizarra del menú'))}">${cust.board.map(id=>{ const it = orderItem(id), out = id === cust.soldOut; return `<span role="listitem" class="game-chip${out ? ' out' : ''}" title="${out ? esc(so) : ''}" aria-label="${esc(orderName(it, 1, lang) + (out ? ' – ' + so : ''))}">${orderArtHtml(it)} ${esc(orderName(it, 1, lang))}</span>`; }).join('')}</div>`;
 }
 function orderShelfHtml(round, cust){
   const lang = orderLang(), hide = round.level !== 'A1' && round.level !== 'A2';
@@ -19656,7 +19670,7 @@ function orderShelfHtml(round, cust){
     if(!o) return '';
     const name = isX ? o[lang] : orderName(o, 1, lang);
     const cls = isX ? 'order-t-extra' : (o.type === 'drink' ? 'order-t-drink' : 'order-t-food');
-    return `<button type="button" class="game-tile ${cls}${hide ? ' nolabel' : ''}" data-action="order-tile" data-quiet="1" data-k="${t.k}" data-id="${t.id}" aria-label="${esc(name)}" dir="ltr"><span class="order-tile-art" aria-hidden="true">${o.art}</span><span class="order-tile-name">${esc(name)}</span></button>`;
+    return `<button type="button" class="game-tile ${cls}${hide ? ' nolabel' : ''}" data-action="order-tile" data-quiet="1" data-k="${t.k}" data-id="${t.id}" aria-label="${esc(name)}" dir="ltr"><span class="order-tile-art" aria-hidden="true">${orderArtHtml(o)}</span><span class="order-tile-name">${esc(name)}</span></button>`;
   }).join('')}</div>`;
 }
 function orderStatusHtml(round){
@@ -19713,10 +19727,10 @@ function orderSpeak(round, text){
 function orderArrive(round){
   const cust = orderCust(round); if(!cust || round.finished) return;
   const rtl = document.documentElement.dir === 'rtl';
-  anim(document.getElementById('order-cust'), [
+  anim(document.getElementById('order-cust'), orderWorldOn() ? [{transform:`translateX(${rtl ? -16 : 16}px)`, opacity:0}, {transform:'none', opacity:1}] : [
     {transform:`translateX(${rtl ? -80 : 80}px)`, opacity:0}, {transform:'translateX(0) scale(1)', opacity:1, offset:.75},
     {transform:'translateX(0) scale(1.06, .94)', offset:.9}, {transform:'translateX(0) scale(1)'}
-  ], {duration:400, easing:SPRING});
+  ], {duration:400, easing:orderWorldOn() ? 'ease-out' : SPRING});
   sfx('hop');
   const samOpens = round.index === 0 && !round.greeted && worldKind() === 'order';
   if(round.index === 0 && !round.greeted){ round.greeted = true; if(!samOpens) companionSay(orderLang() === 'es' ? '¿Qué le pongo?' : 'What would you like?', 2200); }
@@ -20467,10 +20481,18 @@ function deskFixHtml(round, t){
   // reduced path left; the old free-text input/desk-fix-go flow is retired.
   return `<div class="desk-fix fade-in" id="desk-fix"><div class="desk-chips">${t.chipVals.map((v, i)=>`<button class="game-opt desk-chip" data-action="desk-chip" data-quiet="1" data-i="${i}">${deskChipLabel(round, f, v)}</button>`).join('')}</div></div>`;
 }
+const DESK_TOWN = {f:[1, 3, 5, 7], m:[2, 4, 6, 8]};
+function deskFaceSrc(round, t){
+  if(worldKind() !== 'desk') return 'char-' + t.ch + '.png';
+  const g = t.g || 'f', list = DESK_TOWN[g === 'm' ? 'm' : 'f'];
+  const i = Math.max(0, round.travellers.indexOf(t)), seed = String((round.travellers[0] && round.travellers[0].ch) || '').length;
+  const face = t.done ? 'warm' : (t.tries ? 'oh' : 'calm');
+  return 'games/worlds/desk/art/traveller-' + list[(seed + i) % list.length] + '-' + face + '.webp';
+}
 function deskBodyHtml(round, t){
   const shown = t.said || round.noVoice;
   return `<div class="desk-trav" id="desk-trav">
-      <span class="desk-who-wrap"><img class="desk-who" id="desk-who" src="char-${t.ch}.png" alt=""></span>
+      <span class="desk-who-wrap"><img class="desk-who" id="desk-who" src="${deskFaceSrc(round, t)}" alt=""></span>
       ${deskBubbleHtml(round, t)}
     </div>
     <div class="order-tools desk-tools">
@@ -28931,7 +28953,7 @@ const THEATRE_QUICK = ['match','build','cross','order','desk','spell','bingo','h
 const THEATRE_QUICK_VIEWS = THEATRE_QUICK.map(k=>'game-' + k);
 const THEATRE_KINDS = ['path','chores','mystery','radio'].concat(THEATRE_QUICK);
 const THEATRE_VIEWS = ['game-path','game-yc','game-chores-building','game-chores-room','game-mystery','game-v2'].concat(THEATRE_QUICK_VIEWS);
-const THEATRE_VER = '11';
+const THEATRE_VER = '13';
 // World Kit switch (worlds SPEC 4.14): one flag per quick game, on once its art and checks pass (Farin 11-10: switch on what is done).
 // ?worlds=1 previews every world in this browser (?worlds=0 switches the preview off). Off = the game plays over its poster's soft backdrop.
 // 2026-11-15 World Kit v1 live: Order Up!, Word Bingo, Mini Cross, Build It, Say It Back (their plates and props passed art QC). Passport Desk waits
@@ -28952,11 +28974,11 @@ function worldsOn(kind){
   }
   return THEATRE_QUICK.includes(kind) && (!!WORLDS_LIVE[kind] || worldsFlag);
 }
-// the end line of a world (SPEC 16; Build It's "All built!" until the lighthouse exists), in the interface language
+// the end line of a world (SPEC 16), in the interface language
 function worldEndLine(){
   const k = worldKind(); if(!k || !THEATRE_QUICK_VIEWS.includes(state.view)) return null;
   const E = {order:L('Closed for today.','Bugünlük kapandı.','امروز تعطیل شد.','Cerrado por hoy.'), bingo:L('Full card!','Tam kart!','کارت کامل!','¡Cartón lleno!'),
-    cross:L('Today\'s puzzle, done.','Bugünün bulmacası tamam.','جدول امروز تموم شد.','El crucigrama de hoy, listo.'), build:L('All built!','Hepsi kuruldu!','همه ساخته شد!','¡Todo construido!'),
+    cross:L('Today\'s puzzle, done.','Bugünün bulmacası tamam.','جدول امروز تموم شد.','El crucigrama de hoy, listo.'), build:L('The lighthouse is lit.','Deniz feneri yandı.','فانوس دریایی روشن شد.','El faro está encendido.'),
     echo:L('That\'s a wrap.','Kayıt bitti.','ضبط تموم شد.','Grabación terminada.')};
   return E[k] || null;
 }
@@ -28964,14 +28986,34 @@ function worldEndLine(){
 function worldKind(){ return (window.Theatre && Theatre.world && Theatre.world()) || null; }
 // "Read lines aloud" (Farin 2026-11-16: "no need to read all the sentences it kills the mood make it optional for the user if they click
 // on it they can hear the sound too"): story, dialogue and companion lines are NOT read aloud by themselves; the learner taps the line.
-// One setting app-wide, OFF by default: state.profile.readLinesAloud. Listening tasks (Word Bingo calls, the spoken order, Listen & Type,
+// One setting app-wide, OFF by default: state.profile.readAloud (Settings › Sound: "Read story lines aloud in games"; SPEC games-2-0 5.2). Listening tasks (Word Bingo calls, the spoken order, Listen & Type,
 // Say It Back's model line) keep their audio.
-function readLinesAloud(){ return !!(state.profile && state.profile.readLinesAloud); }
+function readAloud(){ return !!(state.profile && state.profile.readAloud); }
+window.farinReadAloud = ()=>readAloud(); window.farinGamesReadAloud = window.farinReadAloud;   // the name The Red Suitcase 0.5.1 announced: the same one setting   // the engines (The Red Suitcase, Harbour Files, Open House, Mini Radio) read the same one setting
 // a world line: shown in its balloon / caption with a speaker; heard when tapped (or by itself with the setting on)
 function worldLine(text, who, o){
   o = o || {};
-  if(window.Theatre && Theatre.say) Theatre.say(text, Object.assign({kind:'balloon'}, o, {hear:()=>worldSpeak(text, who)}));
-  if(readLinesAloud()) worldSpeak(text, who, o.done); else if(o.done) setTimeout(o.done, o.wait || 1600);
+  // the first speaker in each game pulses twice, once ever (progress.tapHear[kind], SPEC 5.2)
+  const wk = worldKind(), th = state.progress.tapHear || {}, ring = !!wk && !th[wk];
+  if(ring){ state.progress.tapHear = Object.assign({}, th, {[wk]:1}); save(); }
+  if(window.Theatre && Theatre.say) Theatre.say(text, Object.assign({kind:'balloon'}, o, {ring, hear:()=>worldHear(text, who)}));
+  if(readAloud()) worldHear(text, who, o.done); else if(o.done) setTimeout(o.done, o.wait || 1600);
+}
+// plays a line from its balloon: aria-busy + the mini accent pill (the other accent's flag + ⇄) while it plays (SPEC 5.2)
+function worldHear(text, who, done){
+  const box = document.querySelector('.th-say .th-say-hear');
+  if(box){
+    box.setAttribute('aria-busy', 'true');
+    const cur = ttsAccent() || TTS_ACCENTS[who ? 1 : 0], other = TTS_ACCENTS.find(c=>c !== cur), ov = TTS_AUDIO_VOICES[other];
+    if(!box.querySelector('.th-say-pill') && ttsAccentReady() && ov){
+      const pill = document.createElement('button'); pill.type = 'button'; pill.className = 'th-say-pill';
+      pill.setAttribute('aria-label', L('Switch to','Şuna geç:','تغییر به','Cambiar a') + ' ' + ov.label());
+      pill.innerHTML = TTS_FLAGS[ov.flag] + '<span aria-hidden="true">⇄</span>';
+      pill.addEventListener('click', e=>{ e.stopPropagation(); ttsSetAccent(other); worldHear(text, who); });
+      box.appendChild(pill);
+    }
+  }
+  worldSpeak(text, who, ()=>{ const b = document.querySelector('.th-say .th-say-hear'); if(b){ b.removeAttribute('aria-busy'); const p = b.querySelector('.th-say-pill'); if(p) p.remove(); } if(done) done(); });
 }
 // A world line in a natural voice only, never the device voice (Farin 11-07): who 0 = Bella / Daniela, 1 = George / Dave.
 // Every world line has both clips (Claude/specs/games-own-worlds-2026-11-14/render/tools/voice-gw.mjs). done runs once, at the end
@@ -29000,13 +29042,38 @@ function worldTick(){
   const k = worldKind(), r = state.viewParams && state.viewParams.round;
   if(!k || !r || !THEATRE_QUICK_VIEWS.includes(state.view)) return;
   const p = worldProgress(state.view, r); if(p && Theatre.progress) Theatre.progress(p.done, p.total);
-  document.body.classList.toggle('gw-live', state.view === 'game-echo' && !!r.listening);   // the ON AIR plate lights while the mic listens
+  document.body.classList.toggle('gw-live', state.view === 'game-echo' && !!r.listening);
+  try{ if(k === 'build' && p) worldLighthouse(p.done, p.total, !!r.finished); if(k === 'echo') worldEchoHost(r); }catch(e){}   // the ON AIR plate lights while the mic listens
   const over = state.view === 'game-match' ? !!(r.matchedKeys && r.matchedKeys.length === r.pairCount) : !!r.finished;
   if(over && !r.beat){
     r.beat = 1;
     if(Theatre.finale) Theatre.finale({});
     if(state.view === 'game-order') orderSam('close');
   }
+}
+// Build It (worlds SPEC 7): the model lighthouse on the bench grows one tier per sentence and lights at the end. Tiers shown =
+// round(6 x solved / total), so a short round still ends whole. One render, cut at its own red / white band edges (manifest-lighthouse.json).
+const LIGHTHOUSE_TIERS = [1, .8167, .6764, .5444, .4028, .1833, 0];   // the top edge of what shows, for 0..6 tiers
+function worldLighthouse(done, total, lit){
+  const tiers = total ? Math.round(6 * done / total) : 0, top = LIGHTHOUSE_TIERS[Math.max(0, Math.min(6, tiers))];
+  // on the bench between the window and the red toolbox (plate %); the whole model shows faintly from the start, so the goal is in sight
+  const src = 'games/worlds/build/art/build-lighthouse.webp', box = [58.5, 43.9, 14];
+  Theatre.actor('gw-lighthouse-ghost', src, box, 'gw-lighthouse-ghost');
+  const n = Theatre.actor('gw-lighthouse', src, box, 'gw-lighthouse');
+  if(!n) return;
+  const was = n.getAttribute('data-tiers');
+  n.setAttribute('data-tiers', tiers);
+  n.style.clipPath = 'inset(' + (top * 100).toFixed(2) + '% -10% 0 -10%)';
+  if(was != null && +was < tiers && !reducedMotion()) anim(n, [{transform:'translateY(-4%)', opacity:.6}, {transform:'translateY(.6%)', opacity:1, offset:.7}, {transform:'none', opacity:1}], {duration:380, easing:'ease-out'});
+  const g = Theatre.actor('gw-lamp-glow', lit ? 'games/worlds/build/art/build-lamp-glow.webp' : null, [56.1, 39.7, 19], 'gw-lamp-glow');
+  if(g && !g.getAttribute('data-on')){ g.setAttribute('data-on', '1'); if(!reducedMotion()) anim(g, [{opacity:0}, {opacity:1}], {duration:700, easing:'ease-out'}); }
+}
+// Say It Back (worlds SPEC 9): the host and his echo (one picture, the echo at 40 %) in the inline-start third. He listens while the line
+// plays, speaks while the mic is on, and looks pleased on a clear line and at the end.
+function worldEchoHost(r){
+  const line = r.lines && r.lines[r.index];
+  const face = r.listening ? 'speak' : ((r.finished || (line && line.state === 'result' && line.clear)) ? 'pleased' : 'listen');
+  Theatre.actor('gw-host', 'games/worlds/echo/art/echo-duo-' + face + '.webp', [22, 40.6, 40], 'gw-host');   // behind the desk (the front layer), right of the lamp
 }
 // The world's own sounds (SPEC 4.10): the app's sound names played as the world's foley (the Open House CC0 kit); anything not
 // listed keeps the app's own sound. Say It Back keeps its quiet UI sounds (accuracy matters there).
@@ -29023,7 +29090,7 @@ function orderSam(which, then){
   let img = null;
   if(st){ img = document.createElement('img'); img.id = 'gw-sam'; img.className = 'th-world-cut gw-sam'; img.alt = ''; img.src = 'games/case-closed/art/pt-sam-' + (which === 'open' ? 'open' : 'calm') + '.webp'; st.appendChild(img); }
   const t0 = Date.now();
-  setTimeout(()=>worldLine(line, 1, {who:'gw-sam', ms:3400, wait:1500, done:fin}), 80);
+  setTimeout(()=>worldLine(line, 1, {who:'gw-sam', ms:5000, wait:1500, done:fin}), 80);
   function fin(){ setTimeout(()=>{   // Sam stays at least 2 s, even if the clip ends early or cannot play
     if(which === 'open' && img){ const a = reducedMotion() ? null : anim(img, [{opacity:1}, {opacity:0}], {duration:300, fill:'forwards'}); const rm = ()=>img.remove(); if(a) a.onfinish = rm; else rm(); }
     if(then) then();
@@ -29034,7 +29101,7 @@ const ORDER_THANKS = {en:['Thanks a lot!', 'Lovely, thank you!', 'Perfect, thank
 function orderThanks(round){
   if(worldKind() !== 'order') return;
   const list = ORDER_THANKS[orderLang() === 'es' ? 'es' : 'en'], line = list[round.index % list.length];
-  worldLine(line, TTS_ACCENTS.indexOf(ttsAccent()) === 1 ? 1 : 0, {who:'order-cust', ms:1500});
+  worldLine(line, TTS_ACCENTS.indexOf(ttsAccent()) === 1 ? 1 : 0, {who:'order-cust', ms:5000});
 }
 let theatreLoading = null;
 function theatreLoad(){
@@ -30573,6 +30640,7 @@ const HANDLERS = {
   'spell-tile'(el){ const r = state.viewParams && state.viewParams.round, d = r && spellCur(r); if(!d || r.finished || d.open || spellQ(r).echo || d.step !== 4) return; spellTilePlace(r, d, +el.dataset.ti); },
   'spell-unplace'(el){ const r = state.viewParams && state.viewParams.round, d = r && spellCur(r); if(!d || r.finished || d.open || spellQ(r).echo || d.step !== 4) return; spellTileUnplace(r, d, +el.dataset.si); },
   // ---- Games shelf (Jq6f9OFv, D4 = A): one tap replays a game the learner has met, with fresh content ----
+  'toggle-read-aloud'(){ state.profile.readAloud = !readAloud(); save(); render(); },   // Games 2.0 SPEC 5.2, default off
   'shelf-play'(el){
     const kind = el.dataset.kind;
     if(theatreGate(el, 'shelf-play')) return;   // Game Theatre (shelf entries too)
@@ -30733,7 +30801,7 @@ const HANDLERS = {
         if(!echoShadowSupported()) echoRound.shadow = true;
         go('game-echo', Object.assign({round: echoRound}, params));
         const first = ()=>{ if(state.viewParams && state.viewParams.round === echoRound) echoSpeak(echoRound, 0.92); };
-        if(worldKind() === 'echo') setTimeout(()=>{ const line = TTS_LANG.slice(0, 2) === 'es' ? '¡Estás en antena!' : 'You\'re on air!'; worldLine(line, 1, {who:'gw-onair', ms:2600, wait:900, done:()=>setTimeout(first, 300)}); }, 400);
+        if(worldKind() === 'echo') setTimeout(()=>{ const line = TTS_LANG.slice(0, 2) === 'es' ? '¡Estás en antena!' : 'You\'re on air!'; worldLine(line, 1, {who:'gw-onair', ms:5000, wait:900, done:()=>setTimeout(first, 300)}); }, 400);
         else setTimeout(first, 400);
         return;
       }
