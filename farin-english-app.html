@@ -3693,6 +3693,90 @@
   .onb-confetti i{position:absolute; top:-18px; display:block; border-radius:2px; opacity:0; animation:onbConfetti 2.8s cubic-bezier(.25,.6,.5,1) both;}
   @keyframes onbConfetti{0%{opacity:0; transform:translate3d(0,0,0) rotate(var(--r));} 8%{opacity:1;} 100%{opacity:0; transform:translate3d(0, 110vh, 0) rotate(calc(var(--r) + 540deg));}}
   @media (prefers-reduced-motion: reduce){ .onb-wfe{animation:none;} .onb-confetti{display:none;} }
+  /* FEschool intro before the questions (Farin 2026-11-25: "FEschool builds a learning experience around YOU!"): the Course Report hero
+     (purple, orange + white dots) with YOU in the middle and the four things the app reads around it, the title, one short line, one
+     pinned orange button. The hero plays once (~1 s), nothing moves after that. Byte-identical in both apps. */
+  .onb-intro .onb-nav{padding-bottom:14px;}
+  .oi-hero{position:relative; overflow:hidden; height:250px; border-radius:28px; background:linear-gradient(140deg, var(--fs-purple), var(--fs-purple-2)); box-shadow:0 18px 34px -20px rgba(90,63,214,.6);}
+  .oi-hero::before, .rb-gather::before{content:""; position:absolute; inset:0; pointer-events:none; background-image:radial-gradient(circle, rgba(255,165,61,.55) 0 2.5px, transparent 3px), radial-gradient(circle, rgba(255,255,255,.28) 0 2px, transparent 2.5px); background-size:160px 130px, 110px 96px; background-position:20px 26px, 70px 70px;}
+  .oi-lines{position:absolute; inset:0; width:100%; height:100%; animation:rbShow .6s ease .45s both;}
+  .oi-lines line{stroke:rgba(255,255,255,.55); stroke-width:2; stroke-dasharray:3 6; stroke-linecap:round; vector-effect:non-scaling-stroke;}
+  .oi-you, .rb-core{position:relative; flex:none; display:flex; align-items:center; justify-content:center; width:104px; height:104px; box-sizing:border-box; padding:0 10px; border-radius:50%; background:#fff; color:#5A3FD6; font-family:'Fredoka',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:25px; line-height:1; letter-spacing:-.01em; box-shadow:0 0 0 10px rgba(255,255,255,.16), 0 16px 28px -12px rgba(26,20,16,.5);}
+  .oi-you{position:absolute; left:50%; top:50%; margin:-52px 0 0 -52px; animation:onbPop .8s cubic-bezier(.22,1.35,.36,1) .1s both;}
+  .oi-you .dot, .rb-core .dot{color:var(--fs-orange);}
+  .oi-chip, .rb-chip{display:inline-flex; align-items:center; gap:7px; box-sizing:border-box; padding:7px 13px 7px 8px; border-radius:999px; background:#fff; color:#1A1410; font-weight:800; font-size:12.5px; line-height:1.2; white-space:nowrap; box-shadow:0 8px 16px -8px rgba(26,20,16,.45);}
+  html[dir="rtl"] .oi-chip, html[dir="rtl"] .rb-chip{padding:7px 8px 7px 13px;}
+  .oi-chip i{flex:none; width:24px; height:24px; border-radius:50%; display:grid; place-items:center; background:color-mix(in srgb, var(--c) 16%, #fff); color:var(--c);}
+  .oi-chip i svg{width:13px; height:13px;}
+  .oi-chip{position:absolute; transform:translate(-50%,-50%); animation:oiChip .6s cubic-bezier(.22,1.35,.36,1) calc(.3s + var(--i) * .12s) both;}
+  .oi-c1{left:27%; top:14%; --fx:34px; --fy:26px;} .oi-c2{left:73%; top:14%; --fx:-34px; --fy:26px;}
+  .oi-c3{left:27%; top:86%; --fx:34px; --fy:-26px;} .oi-c4{left:73%; top:86%; --fx:-34px; --fy:-26px;}
+  html[dir="rtl"] .oi-c1, html[dir="rtl"] .oi-c3{left:73%; --fx:-34px;} html[dir="rtl"] .oi-c2, html[dir="rtl"] .oi-c4{left:27%; --fx:34px;}
+  @keyframes oiChip{from{opacity:0; transform:translate(-50%,-50%) translate(var(--fx), var(--fy)) scale(.5);} to{opacity:1; transform:translate(-50%,-50%);}}
+  .oi-eb{margin-top:30px;}
+  .oi-t{font-size:27px; line-height:1.15; text-wrap:balance;}
+  .oi-t em{font-style:normal; color:var(--fs-purple-ink);}
+  @media (max-width:370px){ .oi-hero{height:226px;} .oi-chip{font-size:11.5px; padding-inline-end:10px;} .oi-t{font-size:24px;} .oi-eb{margin-top:24px;} }
+  @media (max-height:700px){ .oi-hero{height:206px;} .oi-eb{margin-top:20px;} }
+  /* The roadmap build after Go! (Farin 2026-11-25: "an animated transition that makes it feel as if FEschool is building their personalized
+     roadmap", from the real answers): the answers gather into the learner's name, the real cards of the page just built drop in, a quick
+     scroll down to the Page report card, then the welcome card rises with the confetti and FE, and the orange button opens Home. ~5 s, Skip
+     jumps to the end. Every delay is written from the build's start time (rbStart), so a repaint mid-way picks the motion up where it was;
+     every element's own style is its END state (prefers-reduced-motion shows the welcome card at once). Byte-identical in both apps. */
+  .onb-build .screen{overflow:hidden;}
+  .rb-skip{all:unset; box-sizing:border-box; cursor:pointer; padding:7px 14px; border-radius:999px; background:var(--bg-elevated); border:1px solid var(--border-soft); color:var(--ink-soft); font-weight:800; font-size:13px; opacity:0; visibility:hidden;}
+  .rb-skip:focus-visible{outline:2px solid var(--fs-purple); outline-offset:2px;}
+  .rb-body{position:relative; flex:1; display:flex; flex-direction:column; margin-top:6px;}
+  .rb-run{flex:1; display:flex; flex-direction:column; opacity:0; visibility:hidden;}
+  .rb-ts{display:grid; margin-top:6px;}
+  .rb-ts > h2{grid-area:1 / 1; margin:0;}
+  .rb-ta, .rb-tb{opacity:0; visibility:hidden;}
+  .rb-ts .dot{color:var(--fs-orange);}
+  .rb-bar{height:6px; margin-top:14px; border-radius:999px; background:var(--fs-purple-soft); overflow:hidden;}
+  .rb-bar i{display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg, var(--fs-purple), var(--fs-orange)); transform-origin:0 50%;}
+  html[dir="rtl"] .rb-bar i{transform-origin:100% 50%; background:linear-gradient(270deg, var(--fs-purple), var(--fs-orange));}
+  .rb-stage{position:relative; flex:1; min-height:260px; margin-top:18px; margin-bottom:calc(-88px - env(safe-area-inset-bottom, 0px));}
+  .rb-gather{position:absolute; inset:0; z-index:2; overflow:hidden; border-radius:28px; background:linear-gradient(140deg, var(--fs-purple), var(--fs-purple-2)); box-shadow:0 18px 34px -20px rgba(90,63,214,.6); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:44px; padding:20px 14px; box-sizing:border-box; opacity:0; visibility:hidden;}
+  .rb-cloud{position:relative; display:flex; flex-wrap:wrap; justify-content:center; gap:9px; max-width:330px;}
+  .rb-fly{display:inline-flex; opacity:0; transform:translate(var(--dx, 0px), var(--dy, 0px)) scale(.2);}
+  .rb-chip i{flex:none; width:9px; height:9px; margin:0 4px; border-radius:50%; background:var(--c);}
+  .rb-chip bdi{max-width:150px; overflow:hidden; text-overflow:ellipsis;}
+  .rb-core{width:112px; height:112px; font-size:21px;}
+  .rb-core bdi{display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:2px 0;}
+  .rb-win{position:absolute; inset:0; z-index:1; overflow:hidden; -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 40px), transparent); mask-image:linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 40px), transparent);}
+  .rb-col{padding:24px 2px 44px; transform:translateY(calc(-1 * var(--rb-dist, 0px)));}
+  .rb-card{position:relative; box-sizing:border-box; height:92px; border-radius:24px; padding:22px 20px 0; box-shadow:var(--clay-shadow); background:linear-gradient(150deg, #7C5CFC, #5A3FD6); color:#fff;}
+  .rb-card small{display:block; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.05em; line-height:1.2; color:rgba(255,255,255,.86); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .rb-card b{display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-top:4px; font-family:'Fredoka',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:15.5px; line-height:1.25; letter-spacing:-.01em; overflow-wrap:anywhere;}
+  .rb-card.rb-white{background:var(--bg-elevated); color:var(--fs-purple-ink); box-shadow:var(--clay-shadow), inset 0 0 0 1.5px color-mix(in srgb, #7C5CFC 24%, var(--bg-elevated));}
+  .rb-card.rb-white small{color:color-mix(in srgb, var(--fs-purple-ink) 70%, var(--ink-soft));}
+  .rb-card.rb-orange{background:linear-gradient(150deg, #FFB65F, #FFA53D); color:#3B2300;}
+  .rb-card.rb-orange small{color:rgba(59,35,0,.78);}
+  .rb-card.rb-poster{background:#E9E4F7; padding:16px 12px 0; display:flex; align-items:flex-end; padding-bottom:10px;}
+  .rb-card.rb-poster img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; pointer-events:none;}
+  .rb-poster .rb-ct{position:relative; z-index:1; max-width:64%; box-sizing:border-box; padding:7px 10px; border-radius:14px; background:rgba(255,255,255,.86); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);}
+  .rb-poster small{color:#4d6b66;}
+  .rb-poster b{color:#14332e; font-size:14px; -webkit-line-clamp:1; margin-top:2px;}
+  .rb-ring{position:absolute; left:50%; top:-14px; z-index:3; width:28px; height:28px; margin-left:-14px; box-sizing:border-box; border-radius:50%; background:var(--bg-elevated); border:3.5px solid #7C5CFC; box-shadow:0 4px 10px -3px rgba(0,0,0,.25);}
+  .rb-orange .rb-ring{border-color:#FFA53D;}
+  .rb-card:first-child .rb-ring{background:color-mix(in srgb, #7C5CFC 22%, var(--bg-elevated));}
+  .rb-sheet{position:absolute; inset:0; z-index:4; margin:0;}
+  .rb-foot{opacity:1;}
+  @keyframes rbShow{from{opacity:0; visibility:hidden;} to{opacity:1; visibility:visible;}}
+  @keyframes rbGone{from{opacity:1; visibility:visible;} to{opacity:0; visibility:hidden;}}
+  @keyframes rbBlink{0%{opacity:0; visibility:visible; transform:translateY(8px);} 22%, 78%{opacity:1; visibility:visible; transform:none;} 100%{opacity:0; visibility:hidden; transform:translateY(-8px);}}
+  @keyframes rbRise{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+  @keyframes rbGatherOut{from{opacity:1; visibility:visible; transform:none;} to{opacity:0; visibility:hidden; transform:scale(.92) translateY(-14px);}}
+  @keyframes rbChipIn{from{opacity:0; transform:scale(.4);} to{opacity:1; transform:none;}}
+  @keyframes rbFly{from{opacity:1; transform:none;} 70%{opacity:1;} to{opacity:0; transform:translate(var(--dx, 0px), var(--dy, 0px)) scale(.2);}}
+  @keyframes rbGulp{0%{transform:none;} 45%{transform:scale(1.14);} 100%{transform:none;}}
+  @keyframes rbCardIn{from{opacity:0; transform:translateY(-22px) scale(.94);} to{opacity:1; transform:none;}}
+  @keyframes rbScroll{from{transform:none;} to{transform:translateY(calc(-1 * var(--rb-dist, 0px)));}}
+  @keyframes rbBar{from{transform:scaleX(0);} to{transform:scaleX(1);}}
+  @keyframes rbGlow{0%{transform:none; box-shadow:var(--clay-shadow);} 40%{transform:scale(1.035); box-shadow:var(--clay-shadow), 0 0 0 5px rgba(255,165,61,.85);} 100%{transform:none; box-shadow:var(--clay-shadow), 0 0 0 3px rgba(255,165,61,.6);}}
+  @keyframes rbSheetIn{from{transform:translateY(calc(100% + 140px));} to{transform:none;}}
+  .rb-report{box-shadow:var(--clay-shadow), 0 0 0 3px rgba(255,165,61,.6);}
+  @media (prefers-reduced-motion: reduce){ .onb-intro *, .onb-build, .onb-build *{animation:none !important;} .onb-build .onb-confetti{display:none;} }
   /* header language control (Farin 2026-10-27): learning-language flag + interface code; opens the language sheet */
   .lang-pill{display:inline-flex; align-items:center; gap:6px; height:34px; box-sizing:border-box; padding:0 11px 0 8px; border-radius:999px; background:var(--bg-elevated); border:1px solid var(--border-soft); box-shadow:var(--clay-shadow-soft); color:var(--ink-soft); font:inherit; font-weight:800; font-size:12px; letter-spacing:.03em; flex:0 0 auto; cursor:pointer; -webkit-tap-highlight-color:transparent;}
   html[dir="rtl"] .lang-pill{padding:0 8px 0 11px;}
@@ -8875,10 +8959,10 @@ function ttsDeviceRate(rate){
   let lv = null; try{ lv = state.profile.level; }catch(e){}
   return Math.min(rate || 0.92, lv === 'A1' ? 0.75 : lv === 'A2' ? 0.83 : 1);
 }
-function ttsSpeakDevice(text, rate, cb){
+function ttsSpeakDevice(text, rate, cb, speed){
   try{
     if(typeof speechSynthesis === 'undefined' || typeof SpeechSynthesisUtterance === 'undefined'){ if(cb.error) cb.error(); return; }
-    const u = ttsUtter(text, ttsDeviceRate(rate));
+    const u = ttsUtter(text, ttsDeviceRate(rate) * (speed > 0 && !(rate && rate <= 0.75) ? speed : 1));   // speed: a game's pace by level (Passport Desk)
     u.onend = ()=>{ if(cb.end) cb.end(); };
     u.onerror = ()=>{ if(cb.error) cb.error(); };
     speechSynthesis.speak(u);
@@ -8886,6 +8970,8 @@ function ttsSpeakDevice(text, rate, cb){
 }
 // Speaks text: the natural clip when there is one, else the device voice.
 // cb = {end, error}; rate follows the old utterance rates (0.92 = normal).
+// opt.speed / opt.keep: a game's pace by level (Passport Desk, 2026-11-23): clips play at opt.speed (pitch kept) and a spliced line keeps at
+// most opt.keep seconds of the quiet each clip carries at its start and end. An explicit slow replay (rate <= 0.75) ignores both.
 function ttsSpeak(text, rate, cb, opt){
   cb = cb || {};
   ttsStop();
@@ -8899,19 +8985,19 @@ function ttsSpeak(text, rate, cb, opt){
   const want = pick ? pick.code : (ttsAccent() || (opt && TTS_ACCENTS.includes(opt.voice) ? opt.voice : ''));
   if(!main){
     const plan = ttsClips ? ttsPlan(text) : null;
-    if(plan && plan.ok){ ttsLast = {text, rate, cb, opt}; ttsPlayPlan(plan, rate, cb, want); return; }
+    if(plan && plan.ok){ ttsLast = {text, rate, cb, opt}; ttsPlayPlan(plan, rate, cb, want, opt); return; }
     ttsLast = null;
     if(opt && opt.natural){ console.warn('[tts] no natural clip, device voice skipped:', key); const ms = 400 + 330 * String(text).split(/\s+/).length; setTimeout(()=>{ if(cb.end) cb.end(); }, ms); return; }
-    ttsSpeakDevice(text, rate, cb); return;
+    ttsSpeakDevice(text, rate, cb, opt && opt.speed); return;
   }
   // the other voice's clip when this line's narrator is not the one wanted
   const alt = !!(want && want !== main && ttsAlt && ttsAlt[key] === want), code = alt ? want : main;
   ttsLast = {text, rate, cb, opt};
   const a = new Audio(ttsSrc(key, code));
-  // clips are recorded at their level's pace (A1 / A2 slower), so only an explicit slow replay stretches them
-  a.playbackRate = (rate && rate <= 0.75) ? rate / 0.92 : 1; a.preservesPitch = true;
+  // clips are recorded at their level's pace (A1 / A2 slower), so only an explicit slow replay stretches them (or a game's pace, opt.speed)
+  a.playbackRate = ttsClipRate(rate, opt); a.preservesPitch = true;
   ttsAudio = a; ttsBadge(code);
-  const fail = ()=>{ if(ttsAudio !== a) return; ttsAudio = null; ttsBadge(null); if(opt && opt.natural){ if(cb.end) cb.end(); return; } ttsSpeakDevice(text, rate, cb); };
+  const fail = ()=>{ if(ttsAudio !== a) return; ttsAudio = null; ttsBadge(null); if(opt && opt.natural){ if(cb.end) cb.end(); return; } ttsSpeakDevice(text, rate, cb, opt && opt.speed); };
   a.onended = ()=>{ if(ttsAudio !== a) return; ttsAudio = null; ttsBadge(null); if(cb.end) cb.end(); };
   a.onerror = fail;
   try{ const p = a.play(); if(p && p.catch) p.catch(fail); }catch(e){ fail(); }
@@ -8976,23 +9062,64 @@ function ttsPlan(text){
   ttsPlanCache.set(s, plan);
   return plan;
 }
+// A clip's playback rate: an explicit slow replay stretches it; else a game's pace (opt.speed, Passport Desk by level); else 1.
+function ttsClipRate(rate, opt){ return (rate && rate <= 0.75) ? rate / 0.92 : ((opt && opt.speed > 0) ? opt.speed : 1); }
+/* Where the voice starts and ends inside a clip (2026-11-23). An English (Kokoro) clip carries about 0.26-0.45 s of quiet before the voice
+   and 0.17-0.55 s after it, so a Passport Desk line spliced from 10 pieces had about 9 s of quiet in it (the "slow reading": about 70 words
+   a minute, though the voice inside speaks at about 130). Decoded once per clip (the file is already fetched for playing); null when it
+   can't be read, and then the clip plays whole, as before. */
+const ttsEdgeCache = new Map();
+let ttsEdgeCtx = null;
+function ttsEdges(url){
+  if(ttsEdgeCache.has(url)) return ttsEdgeCache.get(url);
+  let p;
+  try{
+    const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if(!AC || typeof fetch !== 'function') p = Promise.resolve(null);
+    else p = fetch(url).then(r=>r.ok ? r.arrayBuffer() : null).then(buf=>buf && new Promise((ok, no)=>{
+      if(!ttsEdgeCtx) ttsEdgeCtx = new AC(1, 1, 24000);
+      const r = ttsEdgeCtx.decodeAudioData(buf, ok, no); if(r && r.catch) r.catch(no);
+    })).then(ab=>{
+      if(!ab) return null;
+      const d = ab.getChannelData(0), n = d.length, th = 0.004;
+      let a = 0, z = n - 1;
+      while(a < n && Math.abs(d[a]) < th) a++;
+      while(z > a && Math.abs(d[z]) < th) z--;
+      return a >= z ? null : {lead:a / ab.sampleRate, tail:(n - 1 - z) / ab.sampleRate, dur:n / ab.sampleRate};
+    }).catch(()=>null);
+  }catch(e){ p = Promise.resolve(null); }
+  if(ttsEdgeCache.size > 600) ttsEdgeCache.clear();
+  ttsEdgeCache.set(url, p);
+  return p;
+}
 // Plays a plan's clips back to back in one voice (want, else the first piece's narrator), all preloaded.
-function ttsPlayPlan(plan, rate, cb, want){
+// opt.speed: the playback rate (pitch kept), the pauses between pieces shortened by the same factor; opt.keep: the most quiet (s) left at
+// each end of a piece (its start skipped, the piece ended where its voice ends + keep), from ttsEdges(); a piece not decoded yet plays whole.
+function ttsPlayPlan(plan, rate, cb, want, opt){
   const code = want || ttsClips[plan.pieces[0].k], my = ++ttsSeqTok;
+  const slow = !!(rate && rate <= 0.75), sp = ttsClipRate(rate, opt), keep = (!slow && opt && opt.keep >= 0) ? opt.keep : null;
   const list = plan.pieces.map(p=>{
-    const a = new Audio(ttsSrc(p.k, code)); a.preload = 'auto';   // a character voice's own pieces, the other voice's or the main set's
-    a.playbackRate = (rate && rate <= 0.75) ? rate / 0.92 : 1; a.preservesPitch = true;
-    return {a, pause:p.pause};
+    const url = ttsSrc(p.k, code), a = new Audio(url); a.preload = 'auto';   // a character voice's own pieces, the other voice's or the main set's
+    a.playbackRate = sp; a.preservesPitch = true;
+    return {a, url, pause:sp === 1 || slow ? p.pause : Math.round(p.pause / sp), edges:null};
   });
   ttsBadge(code);
   const finish = ok=>{ if(ttsSeqTok !== my) return; ttsAudio = null; ttsBadge(null); if(ok){ if(cb.end) cb.end(); } else if(cb.error) cb.error(); };
+  let cur = -1, armCur = null;
+  if(keep != null) list.forEach((it, i)=>ttsEdges(it.url).then(e=>{ it.edges = e; if(e && i === cur && armCur) armCur(); }));
   const next = i=>{
     if(ttsSeqTok !== my) return;
     if(i >= list.length){ finish(true); return; }
-    const it = list[i]; ttsAudio = it.a;
-    const go = ()=>{ if(ttsSeqTok !== my) return; if(it.pause && i < list.length - 1) ttsSeqTimer = setTimeout(()=>next(i + 1), it.pause); else next(i + 1); };
+    const it = list[i]; ttsAudio = it.a; cur = i;
+    let done = false, cut = 0, playing = false;
+    const go = ()=>{ if(done || ttsSeqTok !== my) return; done = true; clearTimeout(cut); armCur = null; if(keep != null) try{ it.a.pause(); }catch(e){} if(it.pause && i < list.length - 1) ttsSeqTimer = setTimeout(()=>next(i + 1), it.pause); else next(i + 1); };
+    // with opt.keep the piece ends where its voice ends (+ keep), not where the file ends
+    const arm = ()=>{ const e = it.edges; if(done || !playing || !e || ttsSeqTok !== my) return; clearTimeout(cut); const to = Math.min(e.dur, e.dur - e.tail + keep); cut = setTimeout(go, Math.max(0, (to - it.a.currentTime) / sp * 1000)); };
+    armCur = arm;
     it.a.onended = go;
     it.a.onerror = ()=>{ if(ttsSeqTok === my) go(); };   // a piece that fails is skipped, never the robot voice mid-line
+    it.a.onplaying = ()=>{ playing = true; arm(); };
+    if(it.edges){ const from = Math.max(0, it.edges.lead - keep); if(from > 0.02) try{ it.a.currentTime = from; }catch(e){} }   // skip the quiet before the voice
     try{ const p = it.a.play(); if(p && p.catch) p.catch(()=>{ if(ttsSeqTok === my && ttsAudio === it.a) go(); }); }catch(e){ go(); }
   };
   next(0);
@@ -14054,9 +14181,9 @@ function updateGameBest(kind, st){
     pr.gameBests.cross = Object.assign({}, better ? {clean:st.clean, total:st.total} : prev, {time:isFinite(time) ? time : null});
     return !!prev && better;
   }
-  const metric = kind==='match' ? (b=>-(b.time||9999)) : (kind==='trap' ? (b=>b.score||0) : ((kind==='build' || kind==='bingo' || kind==='chores') ? (b=>b.first||0) : ((kind==='hunt' || kind==='desk' || kind==='mystery') ? (b=>b.clean||0) : (kind==='echo' ? (b=>b.clear||0) : (kind==='order' ? (b=>b.right||0) : (kind==='spell' ? (b=>b.gold||0) : (b=>b.pct||0)))))));
+  const metric = kind==='match' ? (b=>-(b.time||9999)) : (kind==='trap' ? (b=>b.score||0) : ((kind==='build' || kind==='bingo' || kind==='chores') ? (b=>b.first||0) : (kind==='desk' ? (b=>(b.clean||0) / (b.total||5)) : ((kind==='hunt' || kind==='mystery') ? (b=>b.clean||0) : (kind==='echo' ? (b=>b.clear||0) : (kind==='order' ? (b=>b.right||0) : (kind==='spell' ? (b=>b.gold||0) : (b=>b.pct||0))))))));
   const cur = {time:st.time||null, score:st.score!=null ? st.score : null, pct:st.pct!=null ? st.pct : null,
-    first:st.firstTry!=null ? st.firstTry : (st.first!=null ? st.first : null), clean:st.clean!=null ? st.clean : null, clear:st.clear!=null ? st.clear : null, right:st.right!=null ? st.right : null, gold:st.gold!=null ? st.gold : null};
+    first:st.firstTry!=null ? st.firstTry : (st.first!=null ? st.first : null), clean:st.clean!=null ? st.clean : null, total:st.total!=null ? st.total : null, clear:st.clear!=null ? st.clear : null, right:st.right!=null ? st.right : null, gold:st.gold!=null ? st.gold : null};
   if(!prev){ pr.gameBests[kind] = cur; return false; }
   if(metric(cur) > metric(prev)){ pr.gameBests[kind] = cur; return true; }
   return false;
@@ -14573,7 +14700,7 @@ function render(){
   root.insertAdjacentHTML('beforeend', nav);
   if(langSheet && langSheet.view !== state.view) langSheet = null;   // the header language sheet belongs to the screen it was opened on
   langSheetPaint();
-  const noHomeButtonViews = bottomNavViews.concat(['diagnostic-intro','diagnostic-step','welcome','roadmap-report','msg-thread','msg-compose']);
+  const noHomeButtonViews = bottomNavViews.concat(['diagnostic-intro','diagnostic-step','onb-intro','welcome','roadmap-build','roadmap-report','msg-thread','msg-compose']);
   if(!noHomeButtonViews.includes(state.view)){
     root.insertAdjacentHTML('beforeend', `<div class="home-fab-wrap"><button class="home-fab" data-action="nav" data-view="dashboard" aria-label="${L('Home','Ana Sayfa','خانه')}">${ICONS.home}</button></div>`);
   }
@@ -14775,13 +14902,13 @@ function diagProgressBar(step, total){
    then asks the phone's notification question (moved here from the Go! tap). A course link lands on its course page instead. */
 // the celebration on the welcome card (Farin 2026-11-21: "put a motion of celebration when they get to the last part"): 36 paper pieces
 // in the app's colours fall through the card once (CSS only, 3 s), FE pops in under the title; nothing moves after that
-function onbConfettiHtml(){
+function onbConfettiHtml(offsetMs){   // offsetMs (the roadmap build, 2026-11-25): every piece starts that much later, negative = already falling
   const colors = ['#FFA03A', '#7C5CFC', '#FF8FB3', '#FFC93C', '#5CC8A8', '#FF6B4A'];
   let out = '';
   for(let i = 0; i < 36; i++){
     const left = (i * 2.78 + Math.random() * 2.5).toFixed(1), delay = (Math.random() * 1.1).toFixed(2), dur = (2.2 + Math.random() * 1.1).toFixed(2);
     const w = 6 + Math.round(Math.random() * 6), h = 8 + Math.round(Math.random() * 8), rot = Math.round(Math.random() * 360), round = Math.random() < 0.3;
-    out += `<i style="left:${left}%; width:${w}px; height:${round ? w : h}px; background:${colors[i % colors.length]}; animation-delay:${delay}s; animation-duration:${dur}s; --r:${rot}deg;${round ? ' border-radius:50%;' : ''}"></i>`;
+    out += `<i style="left:${left}%; width:${w}px; height:${round ? w : h}px; background:${colors[i % colors.length]}; animation-delay:${offsetMs != null ? Math.round(offsetMs + delay * 1000) + 'ms' : delay + 's'}; animation-duration:${dur}s; --r:${rot}deg;${round ? ' border-radius:50%;' : ''}"></i>`;
   }
   return out;
 }
@@ -14805,6 +14932,152 @@ function renderWelcome(){
       </div>
     </div>
     <div class="onb-foot"><button class="btn btn-primary fs-cta onb-cta" data-action="welcome-continue">${L("Let's go", 'Hadi başlayalım', 'بزن بریم', '¡Vamos!')}</button></div>
+  </div>`;
+}
+/* FEschool intro + the roadmap build (Farin 2026-11-25). Before the questions: "Introduce FEschool before the assessment ... FEschool
+   builds a learning experience around YOU!", brief. After them: "do not immediately take them to the home screen. Show an animated
+   transition that makes it feel as if FEschool is building their personalized roadmap ... generated from their actual assessment results,
+   not a generic demonstration ... Do not make the student wait unnecessarily." Byte-identical in the English and Spanish apps.
+   Flow: language screen → 'onb-intro' → the six questions (unchanged) → Go! → 'roadmap-build' → Let's go → Home. A course link still lands
+   on its course page. Redoing the diagnostic plays the build too, with "Your new roadmap is ready!" on the card. */
+function renderOnbIntro(){
+  const chip = (n, c, ic, label)=>`<span class="oi-chip oi-c${n}" style="--i:${n - 1}; --c:${c};"><i>${ICONS[ic] || ''}</i><bdi>${esc(label)}</bdi></span>`;
+  return `<div class="fade-in fs-scr onb-q-scr onb-pinned onb-intro">
+    <div class="screen">
+      <div class="onb-nav"><button class="back" data-action="back">${ICONS.back} ${L('Back','Geri','برگشت','Volver')}</button>${langToggle()}</div>
+      <div class="oi-hero" aria-hidden="true">
+        <svg class="oi-lines" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="27" y1="14" x2="50" y2="50"/><line x1="73" y1="14" x2="50" y2="50"/><line x1="27" y1="86" x2="50" y2="50"/><line x1="73" y1="86" x2="50" y2="50"/></svg>
+        ${chip(1, '#FFA53D', 'chart', L('Your level','Seviyen','سطحت','Tu nivel'))}
+        ${chip(2, '#7C5CFC', 'heart', L('Your interests','İlgi alanların','علاقه‌هات','Tus intereses'))}
+        ${chip(3, '#48796B', 'compass', L('Your goals','Hedeflerin','هدف‌هات','Tus objetivos'))}
+        ${chip(4, '#4C6C82', 'book', L('How you learn','Öğrenme tarzın','سبک یادگیری‌ات','Cómo aprendes'))}
+        <div class="oi-you">${L('YOU','SEN','تو','TÚ')}<span class="dot">.</span></div>
+      </div>
+      <div class="onb-eb oi-eb">${L('Welcome to FEschool','FEschool\'a hoş geldin','به <bdi>FEschool</bdi> خوش اومدی','Te damos la bienvenida a FEschool')}</div>
+      <h1 class="onb-h2 oi-t">${L('FEschool builds a learning experience around <em>YOU</em>!','FEschool, öğrenme deneyimini <em>SENİN</em> etrafında kurar!','<bdi>FEschool</bdi> یک تجربه‌ی یادگیری می‌سازه که دورِ <em>خودِ تو</em> می‌چرخه!','¡FEschool crea una experiencia de aprendizaje en torno a <em>TI</em>!')}</h1>
+      <p class="onb-sub">${L("Tell us your level, your interests, your goals and how you like to learn. We turn your answers into a roadmap that's yours alone.",
+        'Seviyeni, ilgi alanlarını, hedeflerini ve nasıl öğrenmeyi sevdiğini söyle. Cevaplarından yalnızca sana ait bir yol haritası hazırlıyoruz.',
+        'سطحت، علاقه‌هات، هدف‌هات و سبکی که دوست داری باهاش یاد بگیری رو بگو. از جواب‌هات یه نقشه‌ی راه می‌سازیم که فقط مال خودته.',
+        'Cuéntanos tu nivel, tus intereses, tus objetivos y cómo te gusta aprender. Con tus respuestas creamos una hoja de ruta solo para ti.')}</p>
+    </div>
+    <div class="onb-foot"><button class="btn btn-primary fs-cta onb-cta" data-action="diag-start">${L("Let's start",'Başlayalım','شروع کنیم','Empecemos')}</button></div>
+  </div>`;
+}
+// The build's clock (ms from the start): answers in, answers into the name, the cards drop in, the scroll, the report card, the welcome card.
+const RB_T = {chip:200, chipStep:90, fly:1250, flyStep:35, gulp:1650, out:1850, card:1950, cardStep:90, cards:8, scroll:3000, scrollDur:1800, glow:4800, sheet:5150, cta:5550, end:6000};
+let rbStart = 0;   // Date.now() when the build started; 0 = nothing playing (a reload, Back or a repaint later shows the end state)
+const RB_GOAL_C = {career:'#CB7D4D', everyday:'#C9978A', exam:'#8B7273', immigration:'#48796B', travel:'#4C6C82'};   // the goal colours of question 1
+const RB_LEARN = {analyst:['Clear rules','Net kurallar','قانون‌های واضح','Reglas claras'], driller:['Lots of practice','Bol pratik','تمرین زیاد','Mucha práctica'],
+  talker:['Real conversation','Gerçek sohbet','گفتگوی واقعی','Conversación real'], immersive:['Learning in context','Bağlam içinde öğrenmek','یادگیری در بافت واقعی','Aprender en contexto']};
+const RB_FOCUS = {grammar:['Focus: grammar','Odak: dilbilgisi','تمرکز: گرامر','Enfoque: gramática'], vocab:['Focus: words','Odak: kelimeler','تمرکز: کلمه‌ها','Enfoque: vocabulario'],
+  listening:['Focus: listening','Odak: dinleme','تمرکز: شنیدن','Enfoque: escuchar'], speaking:['Focus: speaking','Odak: konuşma','تمرکز: صحبت‌کردن','Enfoque: hablar']};
+// the roadmap card colours (renderRoadmapCard's RM_LOOK_OF): purple and white first, orange for the reviews; a game shows its poster
+const RB_LOOK_OF = {grammar:'purple', story:'purple', dialogue:'purple', media:'purple', session:'purple', song:'purple', vocab:'white', slang:'white', writing:'white', speaking:'white', box:'orange', review:'orange', game:'purple'};
+function rbTypeLabel(t){
+  const m = {grammar:['Grammar','Dilbilgisi','گرامر','Gramática'], vocab:['Vocabulary','Kelime','واژگان','Vocabulario'], slang:['Slang','Argo','اصطلاحات','Argot'],
+    box:['Vocab Box','Kelime Kutusu','جعبه‌ی لغات','Caja de palabras'], review:['Review','Tekrar','مرور','Repaso'], session:['Speaking session','Konuşma seansı','جلسه مکالمه','Sesión de conversación'],
+    story:['Story','Hikaye','داستان','Historia'], writing:['Writing practice','Yazma pratiği','تمرین نوشتن','Práctica de escritura'], speaking:['Speaking practice','Konuşma pratiği','تمرین صحبت‌کردن','Práctica de conversación'],
+    game:['GAME','OYUN','بازی','JUEGO'], song:['Song','Şarkı','آهنگ','Canción'], media:['Watch or listen','İzle veya dinle','تماشا یا گوش‌کن','Mira o escucha'], dialogue:['Dialogue','Diyalog','گفت‌وگو','Diálogo']}[t];
+  return m ? L(m[0], m[1], m[2], m[3]) : '';
+}
+// the learner's own answers, as they were picked: goals, level, topics, what helps them, what trips them up
+function rbAnswers(){
+  const p = state.profile || {}, out = [];
+  (p.goals || []).forEach(g=>{ if(GOALS_META[g]) out.push({t:goalMetaLabel(g), c:RB_GOAL_C[g] || '#7C5CFC'}); });
+  if(p.level){ const lv = displayLevel(p); out.push({t:/^[ABC]\d/.test(lv) ? L('Level {x}','Seviye {x}','سطح {x}','Nivel {x}').replace('{x}', lv) : lv, c:'#FFA53D'}); }
+  (p.topics || []).forEach(k=>{ const o = TOPIC_OPTIONS.find(x=>x.value === k); if(o) out.push({t:L(o.label.en, o.label.tr, o.label.fa, o.label.es), c:'#7C5CFC'}); });
+  const lt = RB_LEARN[p.learnerType]; if(lt) out.push({t:L(lt[0], lt[1], lt[2], lt[3]), c:'#5CC8A8'});
+  const pa = RB_FOCUS[p.priorityArea]; if(pa) out.push({t:L(pa[0], pa[1], pa[2], pa[3]), c:'#FF8FB3'});
+  return out.slice(0, 9);
+}
+function rbPlay(redo){
+  const still = (()=>{ try{ return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } })();
+  rbStart = still ? 0 : Date.now();
+  go('roadmap-build', redo ? {redo:true} : {});
+  navHistory.length = 0;   // the account exists now: Back during the build or on the card goes Home, never to the account step
+}
+// the build's clock follows the screen's real animation clock: work right after Go! (saving, the cloud copy) can hold the first frame back,
+// and the motion starts with that frame, so after each paint rbStart is set from the progress bar's own animation (Web Animations API)
+function rbSync(tRender){
+  const bar = document.querySelector('.rb-bar i'), an = bar && bar.getAnimations ? bar.getAnimations()[0] : null;
+  if(!an || !an.ready || !document.timeline) return;
+  an.ready.then(()=>{
+    if(!rbStart || state.view !== 'roadmap-build' || an.startTime == null || !bar.isConnected) return;
+    rbStart = Date.now() - Math.round(document.timeline.currentTime - an.startTime + tRender);
+  }).catch(()=>{});
+}
+// sizes the motion can only take from the page: how far the cards scroll, and where each answer chip flies (to the middle of the name)
+function rbMeasure(){
+  const win = document.querySelector('.rb-win'), col = win && win.querySelector('.rb-col');
+  if(col) col.style.setProperty('--rb-dist', Math.max(0, col.scrollHeight - win.clientHeight) + 'px');
+  const core = document.querySelector('.rb-core'); if(!core) return;
+  const cx = core.offsetLeft + core.offsetWidth / 2, cy = core.offsetTop + core.offsetHeight / 2;   // offsets, not rects: a chip mid-flight still measures from its place
+  document.querySelectorAll('.rb-fly').forEach(el=>{
+    let x = el.offsetLeft, y = el.offsetTop, op = el.offsetParent;
+    while(op && !op.classList.contains('rb-gather')){ x += op.offsetLeft; y += op.offsetTop; op = op.offsetParent; }
+    el.style.setProperty('--dx', Math.round(cx - (x + el.offsetWidth / 2)) + 'px');
+    el.style.setProperty('--dy', Math.round(cy - (y + el.offsetHeight / 2)) + 'px');
+  });
+}
+function renderRoadmapBuild(){
+  const p = state.profile || {}, redo = !!(state.viewParams || {}).redo;
+  const t = rbStart ? Date.now() - rbStart : RB_T.end + 1000;
+  if(t > RB_T.end + 1000) rbStart = 0;
+  const at = ms=>`animation-delay:${Math.round(ms - t)}ms;`;   // negative once it has passed: a repaint picks the motion up where it was
+  const rm = currentRoadmap(), name = (p.name || '').trim();
+  const chips = rbAnswers().map((a, i)=>`<span class="rb-fly" style="animation:rbFly .45s cubic-bezier(.55,0,.75,.4) both; ${at(RB_T.fly + i * RB_T.flyStep)}"><span class="rb-chip" style="--c:${a.c}; animation:rbChipIn .45s cubic-bezier(.22,1.35,.36,1) both; ${at(RB_T.chip + i * RB_T.chipStep)}"><i></i><bdi>${esc(a.t)}</bdi></span></span>`).join('');
+  // one card: the first ones drop in one by one (the rest are below the fold until the scroll); the Page report card lights up at the end
+  const card = (i, look, sub, title, poster, report)=>{
+    const anim = [], delay = [];
+    if(i < RB_T.cards){ anim.push('rbCardIn .45s cubic-bezier(.22,1.2,.36,1) both'); delay.push(Math.round(RB_T.card + i * RB_T.cardStep - t) + 'ms'); }
+    if(report){ anim.push('rbGlow .8s ease both'); delay.push(Math.round(RB_T.glow - t) + 'ms'); }
+    return `<div class="rb-card rb-${look}${report ? ' rb-report' : ''}"${anim.length ? ` style="animation:${anim.join(', ')}; animation-delay:${delay.join(', ')};"` : ''}><i class="rb-ring"></i>${poster ? `<img src="${poster}" alt="" style="object-position:${posterFocus(poster)};" decoding="async">` : ''}<div class="rb-ct"><small>${esc(sub)}</small><b>${bidiMix(title)}</b></div></div>`;
+  };
+  const cards = rm.map((it, i)=>{
+    const poster = it.type === 'game' ? gamePosterSrc(it) : '';
+    const sub = (it.goal && GOALS_META[it.goal] ? goalMetaLabel(it.goal) + ' · ' : '') + rbTypeLabel(it.type);
+    return card(i, poster ? 'poster' : (RB_LOOK_OF[it.type] || 'purple'), sub, nodeTitle(it), poster, false);
+  });
+  cards.push(card(rm.length, 'purple', displayLevel(p) + ' · ' + L('Report','Karne','کارنامه','Informe'), L('Page report','Sayfa karnesi','کارنامهٔ صفحه','Informe de la página'), '', true));
+  const n = rm.length, nTxt = LANG === 'fa' ? n.toLocaleString('fa-IR') : String(n);
+  const who = name ? '<bdi>' + esc(name) + '</bdi>' : '';
+  const wTitle = redo ? L('Your new roadmap is ready!','Yeni yol haritan hazır!','نقشه‌ی راه جدیدت آماده‌ست!','¡Tu nueva hoja de ruta está lista!')
+    : (name ? L('Welcome, {n}!', 'Hoş geldin, {n}!', 'خوش اومدی، {n}!', '¡Te doy la bienvenida, {n}!').replace('{n}', who) : L('Welcome!', 'Hoş geldin!', 'خوش اومدی!', '¡Te doy la bienvenida!'));
+  const wText = redo ? L('Built again from your new answers, for your level and your goals.','Yeni cevaplarına göre; seviyene ve hedeflerine uygun olarak yeniden kuruldu.','از روی جواب‌های تازه‌ات، برای سطح و هدف‌هات دوباره ساخته شد.','Hecha de nuevo con tus respuestas, para tu nivel y tus objetivos.')
+    : L("Your roadmap is ready, built for your level and your goals. A few minutes a day is all it takes, and I'm right beside you, every step of the way.",
+      'Yol haritan hazır; seviyene ve hedeflerine göre kuruldu. Günde birkaç dakika yeter, ben de her adımda yanındayım.',
+      'نقشهٔ راهت آماده‌ست؛ درست بر اساس سطح و هدف‌های خودت. روزی چند دقیقه کافیه، منم قدم‌به‌قدم کنارتم.',
+      'Tu hoja de ruta está lista, hecha para tu nivel y tus objetivos. Con unos minutos al día basta, y yo estoy a tu lado en cada paso.');
+  queueFx(()=>{ rbMeasure(); if(rbStart) rbSync(t); });
+  return `<div class="${t < 60 ? 'fade-in ' : ''}fs-scr onb-welcome onb-build">
+    <div class="screen">
+      <div class="onb-top"><div class="wordmark">Farin<span>${ONB_APP.word}</span></div><button class="rb-skip" data-action="rb-skip" style="animation:rbGone .25s ease both; ${at(RB_T.sheet)}">${L('Skip','Geç','رد شو','Saltar')}</button></div>
+      <div class="rb-body">
+        <div class="rb-run" aria-hidden="true" style="animation:rbGone .3s ease both; ${at(RB_T.sheet + 400)}">
+          <div class="onb-eb">${L('Your roadmap','Yol haritan','نقشه‌ی راهت','Tu hoja de ruta')}</div>
+          <div class="rb-ts">
+            <h2 class="onb-h2 rb-ta" style="animation:rbGone .22s ease both; ${at(RB_T.out)}">${L('Putting your answers together…','Cevaplarını bir araya getiriyoruz…','داریم جواب‌هات رو کنار هم می‌ذاریم…','Juntamos tus respuestas…')}</h2>
+            <h2 class="onb-h2 rb-tb" style="animation:rbBlink ${RB_T.scroll - RB_T.out + 100}ms ease both; ${at(RB_T.out + 200)}">${L('Building your roadmap…','Yol haritanı kuruyoruz…','داریم نقشه‌ی راهت رو می‌سازیم…','Creamos tu hoja de ruta…')}</h2>
+            <h2 class="onb-h2 rb-tc" style="animation:rbRise .35s ease both; ${at(RB_T.scroll + 300)}">${L('{n} steps, made for you','Sana özel {n} adım','{n} قدم، مخصوص خودت','{n} pasos, hechos para ti').replace('{n}', nTxt)}<span class="dot">.</span></h2>
+          </div>
+          <div class="rb-bar"><i style="animation:rbBar ${RB_T.glow - 150}ms cubic-bezier(.3,.6,.5,1) both; ${at(150)}"></i></div>
+          <div class="rb-stage">
+            <div class="rb-win"><div class="rb-col" style="animation:rbScroll ${RB_T.scrollDur}ms cubic-bezier(.7,0,.3,1) both; ${at(RB_T.scroll)}">${cards.join('')}</div></div>
+            <div class="rb-gather" style="animation:rbGatherOut .4s ease both; ${at(RB_T.out)}">
+              <div class="rb-cloud">${chips}</div>
+              <div class="rb-core" style="animation:rbGulp .45s ease both; ${at(RB_T.gulp)}">${who || (L('YOU','SEN','تو','TÚ') + '<span class="dot">.</span>')}</div>
+            </div>
+          </div>
+        </div>
+        <div class="onb-wcard rb-sheet" style="animation:rbSheetIn .6s cubic-bezier(.2,.85,.3,1) both; ${at(RB_T.sheet)}">
+          <h1 class="onb-wt" dir="auto">${wTitle}</h1>
+          <p class="onb-wp" dir="auto">${wText}</p>
+          <div class="onb-confetti" aria-hidden="true">${t < RB_T.end ? onbConfettiHtml(RB_T.sheet + 150 - t) : ''}</div>
+          <img class="onb-wfe" src="${feSrc('p-cheer')}" alt="" style="${at(RB_T.sheet + 250)}">
+        </div>
+      </div>
+    </div>
+    <div class="onb-foot rb-foot" style="animation:rbShow .35s ease both; ${at(RB_T.cta)}"><button class="btn btn-primary fs-cta onb-cta" data-action="welcome-continue">${L("Let's go", 'Hadi başlayalım', 'بزن بریم', '¡Vamos!')}</button></div>
   </div>`;
 }
 function renderDiagStep(){
@@ -21013,9 +21286,10 @@ function orderPeekEnd(){
 /* ============================= FIVE NEW GAMES WAVE B (Jq6f9OFv): PASSPORT DESK =============================
    Spec: Claude/specs/games-5-new-cards-2026-10-04.md §5 (approved by Farin 2026-10-07). Content:
    Claude/specs/games-content/desk-en.md + desk-es.md (farin-lxd, 2026-10-08). You run the arrivals desk:
-   five travellers (the four non-companion characters) say who they are; their arrival card has at most one
-   typo (or, from A2, one blank box) and the learner fixes it, then brings the APPROVED stamp down. Nobody
-   is ever refused. Traveller 1 is always clean; 2-3 of the 5 have one issue. A1 fixes with 3 chips, A2+
+   three travellers (five until 2026-11-23, Farin: "3 rounds per game is enough") say who they are; their
+   arrival card has at most one typo (or, from A2, one blank box; the double has two) and the learner fixes
+   it, then brings the APPROVED stamp down. Nobody is ever refused. One of the three is clean, the other two
+   have an issue (buildDeskRound). A1 fixes with 3 chips, A2+
    types the value (digits or number words, any date format; chips after two misses or when the text
    can't be read), B1 fills its blank box by picking the right question of three, B2 keeps the last
    value of a self-correction, C1 hears fast natural speech and implied dates (a fortnight = 14, una
@@ -21023,7 +21297,7 @@ function orderPeekEnd(){
    a hint, free when the phone has no voice for the language. Untimed, no lives, no XP, never falls back.
    Card values are a target-language document (labels follow the UI language). Roadmap rounds are seeded
    by refId (a replay = the same travellers); the Games shelf draws fresh ones. */
-const DESK_TRAVELLERS = 5;
+const DESK_TRAVELLERS = 3;   // a round's travellers (2026-11-23, Farin: "3 rounds per game is enough"; it was 5). Old saved rounds keep their own length.
 const DESK_NAMES = {
   en:[{first:'Elif', last:'Kaya', g:'f', near:['Kaia','Kayah']}, {first:'Deniz', last:'Arslan', g:'m', near:['Aslan','Arslam']}, {first:'Omar', last:'Haddad', g:'m', near:['Hadad','Haddat']},
     {first:'Mia', last:'Brown', g:'f', near:['Braun','Browne']}, {first:'Tom', last:'Reed', g:'m', near:['Reid','Read']}, {first:'Nina', last:'Petrov', g:'f', near:['Petrof','Petrow']},
@@ -21482,43 +21756,42 @@ function deskMakeTraveller(tpl, level, lang, mode, rnd, usedNames, today, dbl){
   }
   return null;
 }
-// A round: five travellers on distinct templates; traveller 1 clean, 2-3 of the rest with one issue (A2: at most
-// one blank; B1: at most one "ask"). refId seeds a roadmap round; null = fresh (Games shelf).
+// A round (2026-11-23, Farin: "3 rounds per game is enough"; it was five): three travellers on distinct templates.
+//  - the boss (Games 2.0 SPEC 11): the template with the most rows (then the most words) is last;
+//  - exactly one of the three is clean, so every card needs a real check: any traveller but the double, and only a template whose every
+//    card box is said out loud; the other two carry one issue each (A2: a blank only where the template has one; B1: at most one "ask");
+//  - the double (A2+): traveller 2 or 3, never at the position it had in the learner's last round (progress.deskDouble, written when the
+//    round starts, so the read-only probe in theatreQuickKind can't flip it).
+// refId seeds a roadmap round; null = fresh (Games shelf).
+function deskSaysAll(tp, level){ return DESK_FIELDS[deskLevelKey(level)].every(f=>tp.f.some(fs=>fs.indexOf(f) >= 0)); }
 function buildDeskRound(refId){
   const lvl = (state.profile && state.profile.level) || 'A1';
   const level = DESK_TEMPLATES[lvl] ? lvl : 'A1', lang = orderLang();
   const rnd = crossRng(refId ? crossHash('desk|' + refId) : (Math.random()*4294967295) >>> 0);
-  const today = todayISO();
-  for(let attempt = 0; attempt < 20; attempt++){
+  const today = todayISO(), prevDbl = state.progress ? state.progress.deskDouble : null;
+  const size = tp => tp.f.length * 1000 + (tp[lang] || []).join(' ').length;
+  for(let attempt = 0; attempt < 30; attempt++){
     const tpls = crossShuffle(DESK_TEMPLATES[level], rnd).slice(0, DESK_TRAVELLERS);
-    const want = rnd() < .5 ? 2 : 3;
+    let bi = 0; for(let i = 1; i < tpls.length; i++) if(size(tpls[i]) > size(tpls[bi])) bi = i;
+    if(bi !== tpls.length - 1) tpls.push(tpls.splice(bi, 1)[0]);
+    const dbl = level === 'A1' ? -1 : crossShuffle([1, 2].filter(i=>i !== prevDbl), rnd)[0];
+    const cleanAt = crossShuffle([0, 1, 2].filter(i=>i !== dbl && deskSaysAll(tpls[i], level)), rnd)[0];
+    if(cleanAt == null) continue;
     const modes = tpls.map(()=>'clean');
-    let askUsed = false, n = 0;
-    // the B1 template that never says its date of birth takes the "ask" turn first
-    const order = crossShuffle([1, 2, 3, 4], rnd).sort((a, b)=>(tpls[b].id === 'B1-3') - (tpls[a].id === 'B1-3'));
-    for(const i of order){
-      if(n >= want) break;
+    let askUsed = false, bad = false;
+    for(let i = 0; i < tpls.length; i++){
+      if(i === cleanAt) continue;
       const tp = tpls[i], opts = [];
       if(tp.mk[1] === 'blank') opts.push('blank');
-      if(tp.ask && !askUsed) opts.push('ask');
+      if(tp.ask && !askUsed && i !== dbl) opts.push('ask');   // the double needs boxes it can get wrong, never the "ask" turn
       if(deskMistakeOk(tp)) opts.push('mistake');
-      if(!opts.length) continue;
+      if(!opts.length){ bad = true; break; }
+      // the B1 template that never says its date of birth always takes the "ask" turn
       const mode = (opts.indexOf('ask') >= 0 && (tp.id === 'B1-3' || !deskMistakeOk(tp) || rnd() < .4)) ? 'ask' : opts[opts.length - 1];
       if(mode === 'ask') askUsed = true;
-      modes[i] = mode; n++;
+      modes[i] = mode;
     }
-    if(n < 2) continue;
-    // Games 2.0 SPEC 11: the boss = the traveller with the most rows, last (traveller 1 stays the clean one)
-    let bi = 1; for(let i = 2; i < tpls.length; i++) if(tpls[i].f.length > tpls[bi].f.length) bi = i;
-    if(bi !== tpls.length - 1){ tpls.push(tpls.splice(bi, 1)[0]); modes.push(modes.splice(bi, 1)[0]); }
-    // the double (A2+): one traveller at position 2-4 has two mistakes, never at the position it had in the learner's last round
-    let dbl = -1;
-    if(level !== 'A1'){
-      const last = state.progress ? state.progress.deskDouble : null, at = crossShuffle([1, 2, 3].filter(i=>i !== last), rnd);
-      const j = at.find(i=>modes[i] === 'mistake' || modes[i] === 'blank');
-      if(j != null) dbl = j;
-      else { const k = at.find(i=>modes[i] === 'clean' && deskMistakeOk(tpls[i])); if(k != null){ modes[k] = 'mistake'; dbl = k; } }
-    }
+    if(bad) continue;
     const used = new Set(), chars = crossShuffle(ORDER_CHARS.filter(k=>k !== learnerCharKey()), rnd);
     const travellers = [];
     for(let i = 0; i < tpls.length; i++){
@@ -21529,14 +21802,21 @@ function buildDeskRound(refId){
     }
     if(travellers.length < DESK_TRAVELLERS) continue;
     const dblAt = travellers.findIndex(t=>t.issue2);
-    if(dblAt > 0 && state.progress) state.progress.deskDouble = dblAt;
+    if(dbl > 0 && dblAt < 0 && attempt < 24) continue;   // the double found no second box this time: draw again
     // "How to play" shows once, before the learner's first-ever round (gamesMet stays true for every replay after).
-    return {level, lang, today, travellers, index:0, clean:0, combo:0, said:0, noVoice:ttsVoiceMissing(), greeted:false, finished:false, startedAt:Date.now(), finishedAt:null, intro:!gamesMet().has('desk'), double:dblAt > 0};
+    return {level, lang, today, travellers, index:0, clean:0, combo:0, said:0, noVoice:ttsVoiceMissing(), greeted:false, finished:false, startedAt:Date.now(), finishedAt:null, intro:!gamesMet().has('desk'), double:dblAt > 0, dblAt};
   }
   return null;
 }
 function deskCur(round){ return round.travellers[round.index] || null; }
-function deskRate(round){ return round.level === 'A1' ? 0.85 : 0.92; }
+function deskRate(round){ return round.level === 'A1' ? 0.85 : 0.92; }   // the device voice's rate (only when a line has no natural clips)
+// The pace by level (2026-11-23, Farin: "passport check is slow reading, make it just a bit faster according to the level"). The slowness
+// was the quiet inside the spliced clips (about 0.3-0.5 s at both ends of every piece, ~70 words a minute at every level), so:
+// speed = the clips' playback rate (pitch kept, ttsClipRate); keep = the most quiet (s) left at each end of a piece (ttsPlayPlan).
+// A1 keeps the recorded pace and the longest breaks; each level after it a little quicker.
+const DESK_PACE = {A1:{speed:1, keep:.32}, A2:{speed:1.05, keep:.28}, B1:{speed:1.1, keep:.24}, B2:{speed:1.15, keep:.2}, C1:{speed:1.2, keep:.16}};
+function deskPace(round){ return DESK_PACE[round && round.level] || DESK_PACE.A1; }
+function deskSay(round, text, t){ try{ ttsSpeak(text, deskRate(round), null, Object.assign({voice:deskVoice(t)}, deskPace(round))); }catch(e){} }
 function deskFieldsOf(round){ return DESK_FIELDS[deskLevelKey(round.level)]; }
 function deskLineFor(t, field){ return t.lines.find(l=>l.f.indexOf(field) >= 0) || null; }
 // The first field whose card value still differs from what the traveller said (a blank box counts).
@@ -21635,9 +21915,9 @@ function deskPurposeUi(p){
   return L('holiday','tatil','تعطیلات','vacaciones');
 }
 function deskStatusHtml(round){
-  const n = Math.min(round.index + 1, DESK_TRAVELLERS), c = round.combo || 0;
+  const total = round.travellers.length || DESK_TRAVELLERS, n = Math.min(round.index + 1, total), c = round.combo || 0;   // the round's own length: an old saved round of five finishes as it is
   const streak = '';   // no streak pill (Farin's no-scores rule, 2026-11-14)
-  return `<div class="game-status" id="desk-status"><span class="game-status-text">${round.finished ? L('Desk closed','Masa kapandı','میز بسته شد','Control cerrado') : gameProgressHtml(round.index, DESK_TRAVELLERS, L(`Traveller ${n} of ${DESK_TRAVELLERS}`, `Yolcu ${n} / ${DESK_TRAVELLERS}`, `مسافر ${n} از ${DESK_TRAVELLERS}`, `Viajero ${n} de ${DESK_TRAVELLERS}`))}</span>${streak}</div>`;
+  return `<div class="game-status" id="desk-status"><span class="game-status-text">${round.finished ? L('Desk closed','Masa kapandı','میز بسته شد','Control cerrado') : gameProgressHtml(round.index, total, L(`Traveller ${n} of ${total}`, `Yolcu ${n} / ${total}`, `مسافر ${n} از ${total}`, `Viajero ${n} de ${total}`))}</span>${streak}</div>`;
 }
 function deskSaidInner(round, t){
   const shown = t.said || round.noVoice;
@@ -21829,7 +22109,7 @@ let deskBusy = false, deskTimer = null;
 function deskVoice(t){ return t ? {sex:t.g === 'm' ? 'm' : 'f'} : ''; }
 function deskSpeak(round, text, delay){
   const idx = round.index;
-  setTimeout(()=>{ if(state.viewParams && state.viewParams.round === round && round.index === idx && !round.finished) speakTarget(text, deskRate(round), deskVoice(deskCur(round))); }, delay || 60);
+  setTimeout(()=>{ if(state.viewParams && state.viewParams.round === round && round.index === idx && !round.finished) deskSay(round, text, deskCur(round)); }, delay || 60);
 }
 function deskAllSaid(t){ return t.lines.map(l=>l.say).join(' '); }
 function deskArrive(round){
@@ -29828,6 +30108,8 @@ const LEVEL_HANDLERS = {
 const screens = {
   'diagnostic-intro': renderDiagIntro,
   'welcome': renderWelcome,
+  'onb-intro': renderOnbIntro,
+  'roadmap-build': renderRoadmapBuild,
   'restore-code': renderRestoreCode,
   'diagnostic-step': renderDiagStep,
   'privacy-policy': renderPrivacyPolicy,
@@ -31350,7 +31632,7 @@ const HANDLERS = {
   'onb-continue'(){
     const vp = state.viewParams || {};
     if(vp.onbLearn && vp.onbLearn !== ONB_APP.self){ onbLeave(); return; }
-    HANDLERS['diag-start']();
+    go('onb-intro');   // the FEschool intro first (Farin 2026-11-25); its button ('diag-start') opens question 1
   },
   'lang-sheet-open'(){ langSheet = {view: state.view, learn: ONB_APP.self}; langSheetPaint(); const x = document.querySelector('.lsh-x'); if(x) x.focus({preventScroll:true}); },
   'lang-sheet-close'(){ langSheet = null; clearTimeout(onbLeaveTimer); langSheetPaint(); },
@@ -31486,7 +31768,7 @@ const HANDLERS = {
       if(phone){ contactSavePhone(phone, 'signup'); signupPhoneDraft = ''; }
       signupPromoDraft = false;
       const firstTime = !prev.completedDiagnostic && !prev.joinedAt;
-      if(firstTime && !courseLinkPending()){ go('welcome'); }   // the welcome screen (Farin 2026-11-21); 'welcome-continue' opens Home and asks about notifications
+      if(!courseLinkPending()){ rbPlay(!firstTime); }   // the roadmap build, ending on the welcome card (Farin 2026-11-21 + 2026-11-25); 'welcome-continue' opens Home (the first time, it asks about notifications)
       else {
         if(!courseLinkLand()) go('dashboard');
         showSplash();
@@ -31508,10 +31790,13 @@ const HANDLERS = {
     });
   },
   'welcome-continue'(){
-    navHistory.length = 0;   // Back on Home never returns to the welcome screen
+    const redo = state.view === 'roadmap-build' && !!(state.viewParams || {}).redo;
+    rbStart = 0;
     go('dashboard');
-    setTimeout(()=>{ try{ notifAfterSignup(); }catch(err){} }, 400);   // the notifications question (2026-11-16), after the welcome
+    navHistory.length = 0;   // Back on Home never returns to the welcome card (cleared after go(), which pushes the screen it leaves)
+    if(!redo) setTimeout(()=>{ try{ notifAfterSignup(); }catch(err){} }, 400);   // the notifications question (2026-11-16), after the welcome; a redo never asked it
   },
+  'rb-skip'(){ if(rbStart) rbStart = Date.now() - RB_T.sheet; render(); },   // Skip on the roadmap build: straight to the welcome card (its confetti still plays)
   'retake-diagnostic'(){
     state.diag = {step:0, goals:[], level:null, topics:[], learnerType:null, priorityArea:null, test:null};
     state.profile.completedDiagnostic = false;
@@ -32128,7 +32413,7 @@ const HANDLERS = {
     const r = state.viewParams && state.viewParams.round; if(!r || !r.intro) return;
     r.intro = false; sfx('tick'); deskRefresh(); save(); deskArrive(r);
   },
-  'desk-play'(){ const r = state.viewParams && state.viewParams.round, t = r && deskCur(r); if(!t || r.finished) return; if(!t.done){ t.replays = (t.replays || 0) + 1; if(gameBrave('desk') && t.replays === 2) setTimeout(deskRefresh, 0); } speakTarget(t.reply && t.mode === 'ask' ? t.reply : deskAllSaid(t), deskRate(r), deskVoice(t)); },
+  'desk-play'(){ const r = state.viewParams && state.viewParams.round, t = r && deskCur(r); if(!t || r.finished) return; if(!t.done){ t.replays = (t.replays || 0) + 1; if(gameBrave('desk') && t.replays === 2) setTimeout(deskRefresh, 0); } deskSay(r, t.reply && t.mode === 'ask' ? t.reply : deskAllSaid(t), t); },
   'desk-said'(){
     const r = state.viewParams && state.viewParams.round, t = r && deskCur(r); if(!t || r.finished || t.said) return;
     t.said = true; if(!r.noVoice) r.said++;   // a hint for this traveller (free when the phone has no voice)
@@ -32334,11 +32619,11 @@ const HANDLERS = {
     }
     if(kind === 'desk'){
       // Passport Desk: own generated content, never falls back. A roadmap node is seeded by its refId (a replay = the
-      // same five travellers); free play (Games shelf) draws fresh ones. First time ever: a "how to play" card shows
+      // same three travellers); free play (Games shelf) draws fresh ones. First time ever: a "how to play" card shows
       // first and the traveller only steps up once it's dismissed (desk-intro-start); after that it's met, so later
       // rounds skip straight to the traveller stepping up after the render.
       const deskRound = buildDeskRound(params.free ? null : params.refId);
-      if(deskRound){ if(!deskRound.intro) queueFx(()=>deskArrive(deskRound)); go('game-desk', Object.assign({round: deskRound}, params)); return; }
+      if(deskRound){ if(deskRound.dblAt > 0 && state.progress) state.progress.deskDouble = deskRound.dblAt; if(!deskRound.intro) queueFx(()=>deskArrive(deskRound)); go('game-desk', Object.assign({round: deskRound}, params)); return; }   // the double's position, so the next round puts it elsewhere
     }
     if(kind === 'mystery'){
       // Case Closed: two generated cases with one solution each (seeded by refId on the roadmap, fresh on the Games
